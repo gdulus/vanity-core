@@ -4,6 +4,10 @@ class VanityCoreGrailsPlugin {
 
     def grailsVersion = "2.2 > *"
 
+    def dependsOn = [
+        mongodb: "1.1.0.GA"
+    ]
+
     def pluginExcludes = [
         "grails-app/views/error.gsp"
     ]
