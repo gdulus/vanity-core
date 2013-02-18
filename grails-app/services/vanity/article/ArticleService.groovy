@@ -4,6 +4,8 @@ import org.apache.commons.lang.Validate
 
 class ArticleService {
 
+    static transactional = false
+
     TagService tagService
 
     Article create(final Set<String> stringTags, final Closure baseFieldsInitializer) {
@@ -24,5 +26,9 @@ class ArticleService {
         }
         // all ok - article created
         return article
+    }
+
+    public List<Article> getForReview(){
+        return Article.findAllWhere([status:Status.TO_BE_REVIEWED])
     }
 }

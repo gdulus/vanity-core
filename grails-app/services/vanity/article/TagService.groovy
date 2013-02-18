@@ -4,6 +4,8 @@ import org.apache.commons.lang.Validate
 
 class TagService {
 
+    static transactional = false
+
     private static final int MAX_NUMBER_OF_RETRIES = 10
 
     Tag getOrCreate(final String tagName) {
@@ -11,14 +13,14 @@ class TagService {
         Validate.notEmpty(tagName, 'Provide not null tag')
         // prepare tag name and preform creation/find action
         String cleanedUpTagName = cleanUpTagName(tagName)
-        return getOrCreate(Tag.findByName(cleanedUpTagName), cleanedUpTagName)
+        return executeGetOrCreate(Tag.findByName(cleanedUpTagName), cleanedUpTagName)
     }
 
     private String cleanUpTagName(final String tagName){
-        return tagName.trim().capitalize()
+        return tagName.trim().toLowerCase()
     }
 
-    private Tag getOrCreate(final Tag tag, final String cleanedUpTagName, final counter = 0){
+    private Tag executeGetOrCreate(final Tag tag, final String cleanedUpTagName, final counter = 0){
         // check if we haven't exceed number of retries
         if (counter > MAX_NUMBER_OF_RETRIES){
             throw new IllegalStateException('To much retries')
@@ -34,7 +36,36 @@ class TagService {
             return newTag
         }
         // check if other thread created this tag
-        return getOrCreate(Tag.findByName(cleanedUpTagName), cleanedUpTagName, ++counter)
+        return executeGetOrCreate(Tag.findByName(cleanedUpTagName), cleanedUpTagName, ++counter)
+    }
+
+    public List<Tag> getAllForReview(){
+        return Tag.findAllByStatus(Status.TO_BE_REVIEWED, [sort:'name'])
+    }
+
+    public List<Tag> getAllReviewedParentTags(){
+        return Tag.findAllByStatusAndParentTag(Status.PUBLISHED, null, [sort:'name'])
+    }
+
+    public List<Tag> getAllTags(){
+        return Tag.list(sort:'name')
+    }
+
+    public boolean markTagAsParentTag(final String id){
+        if (!id){
+            return false
+        }
+
+        Tag tag = Tag.get(id)
+
+        if (!tag){
+            return false
+        }
+
+        tag.status = Status.PUBLISHED
+        return tag.save() != null
     }
 
 }
+
+
