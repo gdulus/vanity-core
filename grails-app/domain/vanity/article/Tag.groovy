@@ -2,13 +2,19 @@ package vanity.article
 
 class Tag implements ReviewNecessityAware {
 
-    String id
-
     String name
 
     Tag parentTag
 
     Status status
+
+    Date dateCreated
+
+    Date lastUpdated
+
+    static transients = [
+        'shouldBeReviewed'
+    ]
 
     static constraints = {
         name(nullable: false, unique: true)

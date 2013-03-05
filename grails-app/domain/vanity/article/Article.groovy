@@ -4,11 +4,9 @@ import vanity.ContentSource
 
 class Article implements ReviewNecessityAware {
 
-    String id
+    String hash
 
     ContentSource source
-
-    Status status
 
     String title
 
@@ -26,13 +24,13 @@ class Article implements ReviewNecessityAware {
         tags: Tag
     ]
 
-    static embedded = [
-        'tags'
+    static transients = [
+        'shouldBeReviewed'
     ]
 
     static constraints = {
+        hash(nullable:false, blank: false, unique: true)
         source(nullable: false)
-        status(nullable: false)
         body(nullable: false, blank: false)
         title(nullable: false, blank: false)
         url(nullable: false, blank: false, url: true)
@@ -41,8 +39,15 @@ class Article implements ReviewNecessityAware {
     }
 
     static mapping = {
-        version false
-        autoTimestamp true
+        body type: 'text'
+    }
+
+    def beforeValidate(){
+        setUpHash()
+    }
+
+    def beforeInsert() {
+        setUpHash()
     }
 
     @Override
@@ -54,15 +59,17 @@ class Article implements ReviewNecessityAware {
 
     @Override
     boolean shouldBeReviewed() {
-        // if current article is already in "to be reviewed" state
-        if (status && status == Status.TO_BE_REVIEWED){
-            return true
-        }
         // this operation can be performed only on instance with tags
         if (!tags){
             throw new IllegalStateException('Seems that this instance has no tags. Cant determine review necessity.')
         }
         // if there is no tas with state to be reviewed then all is ok
         return (tags.find({it.shouldBeReviewed()}) != null)
+    }
+
+    private void setUpHash(){
+        if (url && !hash){
+            hash = url.encodeAsMD5()
+        }
     }
 }

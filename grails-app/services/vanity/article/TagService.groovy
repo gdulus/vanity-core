@@ -1,6 +1,8 @@
 package vanity.article
 
 import org.apache.commons.lang.Validate
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 
 class TagService {
 
@@ -8,6 +10,7 @@ class TagService {
 
     private static final int MAX_NUMBER_OF_RETRIES = 10
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     Tag getOrCreate(final String tagName) {
         // validate input
         Validate.notEmpty(tagName, 'Provide not null tag')
@@ -21,18 +24,18 @@ class TagService {
     }
 
     private Tag executeGetOrCreate(final Tag tag, final String cleanedUpTagName, final counter = 0){
-        // check if we haven't exceed number of retries
-        if (counter > MAX_NUMBER_OF_RETRIES){
-            throw new IllegalStateException('To much retries')
-        }
         // ok tag exists, return value
         if (tag){
             return tag
         }
+        // check if we haven't exceed number of retries
+        if (counter > MAX_NUMBER_OF_RETRIES){
+            throw new IllegalStateException('To much retries')
+        }
         // tag not exist, prepare it
         Tag newTag = new Tag(name: cleanedUpTagName, status: Status.TO_BE_REVIEWED)
         // try to save it - if its going to fail, then we have uniqueness issue
-        if (newTag.save()){
+        if (newTag.save(flush: true)){
             return newTag
         }
         // check if other thread created this tag

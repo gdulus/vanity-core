@@ -5,7 +5,7 @@ class VanityCoreGrailsPlugin {
     def grailsVersion = "2.2 > *"
 
     def dependsOn = [
-        mongodb: "1.1.0.GA"
+        hibernate: "2.2.1"
     ]
 
     def pluginExcludes = [

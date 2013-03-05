@@ -4,7 +4,7 @@ import org.apache.commons.lang.Validate
 
 class ArticleService {
 
-    static transactional = false
+    static transactional = true
 
     TagService tagService
 
@@ -17,8 +17,6 @@ class ArticleService {
         baseFieldsInitializer.call(article)
         // initialize tags
         stringTags.each({article.addToTags(tagService.getOrCreate(it))})
-        // setup article state
-        article.status = article.shouldBeReviewed() ? Status.TO_BE_REVIEWED : Status.PUBLISHED
         // try to save it
         if (!article.save()){
             log.error("Error during saving article ${article}: ${article.errors}")
