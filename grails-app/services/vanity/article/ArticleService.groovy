@@ -1,13 +1,15 @@
 package vanity.article
 
 import org.apache.commons.lang.Validate
+import org.springframework.transaction.annotation.Transactional
 
 class ArticleService {
 
-    static transactional = true
+    static transactional = false
 
     TagService tagService
 
+    @Transactional
     Article create(final Set<String> stringTags, final Closure baseFieldsInitializer) {
         // validate input
         Validate.notNull(baseFieldsInitializer, 'Provide initializer object to setup base fields')
@@ -26,7 +28,22 @@ class ArticleService {
         return article
     }
 
-    public List<Article> getForReview(){
-        return Article.findAllWhere([status:Status.TO_BE_REVIEWED])
+    @Transactional(readOnly = true)
+    public List<Article> getByTag(final Tag tag){
+        List<Long> result = (List<Long>)Article.executeQuery('''
+                select
+                    distinct a.id
+                from
+                    Article a
+                inner join
+                    a.tags t
+                where
+                    t = :tag
+            ''',
+            [
+                tag:tag
+            ]
+        )
+        return result.collect {Article.get(it)}
     }
 }

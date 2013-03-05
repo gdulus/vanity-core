@@ -42,8 +42,7 @@ class Article implements ReviewNecessityAware {
 
     static mapping = {
         version false
-        body type: 'text'
-        rank default:0
+        body(type: 'text')
     }
 
     def beforeValidate(){

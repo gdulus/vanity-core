@@ -42,31 +42,14 @@ class TagService {
         return executeGetOrCreate(Tag.findByName(cleanedUpTagName), cleanedUpTagName, ++counter)
     }
 
-    public List<Tag> getAllForReview(){
-        return Tag.findAllByStatus(Status.TO_BE_REVIEWED, [sort:'name'])
+    @Transactional(readOnly = true)
+    public List<Tag> getAllValidTags(){
+        return Tag.findAllByStatusInListAndRoot(Status.OPEN_STATUSES, true, [sort:'name'])
     }
 
-    public List<Tag> getAllReviewedParentTags(){
-        return Tag.findAllByStatusAndParentTag(Status.PUBLISHED, null, [sort:'name'])
-    }
-
+    @Transactional(readOnly = true)
     public List<Tag> getAllTags(){
         return Tag.list(sort:'name')
-    }
-
-    public boolean markTagAsParentTag(final Long id){
-        if (!id){
-            return false
-        }
-
-        Tag tag = Tag.get(id)
-
-        if (!tag){
-            return false
-        }
-
-        tag.status = Status.PUBLISHED
-        return tag.save() != null
     }
 
 }
