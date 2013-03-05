@@ -6,9 +6,9 @@ import org.springframework.transaction.annotation.Transactional
 
 class TagService {
 
-    static transactional = false
-
     private static final int MAX_NUMBER_OF_RETRIES = 10
+
+    static transactional = false
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     Tag getOrCreate(final String tagName) {
@@ -54,7 +54,7 @@ class TagService {
         return Tag.list(sort:'name')
     }
 
-    public boolean markTagAsParentTag(final String id){
+    public boolean markTagAsParentTag(final Long id){
         if (!id){
             return false
         }

@@ -8,13 +8,13 @@ class AjaxUtils {
 
     public static class Const {
 
-        public static final JSON SUCCESS_RESPONSE = SUCCESS_RESPONSE_BASE as JSON
-
-        public static final JSON ERROR_RESPONSE = ERROR_RESPONSE_BASE as JSON
-
         private static final Map<String, String> SUCCESS_RESPONSE_BASE = [status:'success']
 
         private static final Map<String, String> ERROR_RESPONSE_BASE = [status:'error']
+
+        public static final JSON SUCCESS_RESPONSE = SUCCESS_RESPONSE_BASE as JSON
+
+        public static final JSON ERROR_RESPONSE = ERROR_RESPONSE_BASE as JSON
 
     }
 
