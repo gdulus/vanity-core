@@ -16,6 +16,8 @@ class Article implements ReviewNecessityAware {
 
     Date publicationDate
 
+    Integer rank = 0
+
     Date dateCreated
 
     Date lastUpdated
@@ -39,7 +41,9 @@ class Article implements ReviewNecessityAware {
     }
 
     static mapping = {
+        version false
         body type: 'text'
+        rank default:0
     }
 
     def beforeValidate(){
