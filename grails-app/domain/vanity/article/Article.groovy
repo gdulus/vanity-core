@@ -72,7 +72,7 @@ class Article implements ReviewNecessityAware {
 
     private void setUpHash(){
         if (url && !hash){
-            hash = url.encodeAsMD5()
+            hash = "${url}${System.currentTimeMillis()}".encodeAsMD5()
         }
     }
 }
