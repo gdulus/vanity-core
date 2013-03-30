@@ -4,6 +4,8 @@ import vanity.ContentSource
 
 class Article implements ReviewNecessityAware {
 
+    String externalId
+
     String hash
 
     ContentSource source
@@ -31,6 +33,7 @@ class Article implements ReviewNecessityAware {
     ]
 
     static constraints = {
+        externalId(nullable:false, unique: 'source')
         hash(nullable:false, blank: false, unique: true)
         source(nullable: false)
         body(nullable: false, blank: false)
