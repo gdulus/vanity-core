@@ -33,7 +33,7 @@ class TagService {
             throw new IllegalStateException('To much retries')
         }
         // tag not exist, prepare it
-        Tag newTag = new Tag(name: cleanedUpTagName, status: Status.TO_BE_REVIEWED)
+        Tag newTag = new Tag(name: cleanedUpTagName, status: Status.Tag.TO_BE_REVIEWED)
         // try to save it - if its going to fail, then we have uniqueness issue
         if (newTag.save(flush: true)){
             return newTag
@@ -44,12 +44,28 @@ class TagService {
 
     @Transactional(readOnly = true)
     public List<Tag> getAllValidTags(){
-        return Tag.findAllByStatusInListAndRoot(Status.OPEN_STATUSES, true, [sort:'name'])
+        return Tag.findAllByStatusInListAndRoot(Status.Tag.OPEN_STATUSES, true, [sort:'name'])
     }
 
     @Transactional(readOnly = true)
     public List<Tag> getAllTags(){
         return Tag.list(sort:'name')
+    }
+
+    @Transactional
+    boolean changeTagStatus(final Long id, final Status.Tag status) {
+        // validate input
+        Validate.notEmpty(id, 'Provide not null tag id')
+        Validate.notEmpty(status, 'Provide not null tag status')
+        // prepare tag name and preform creation/find action
+        Tag tag = Tag.get(id)
+        // check if there is anything to update
+        if (!tag){
+            return false
+        }
+        // execute update
+        tag.status = status
+        return tag.save()
     }
 
 }

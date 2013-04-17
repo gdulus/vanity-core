@@ -4,7 +4,7 @@ class Tag implements ReviewNecessityAware {
 
     String name
 
-    Status status
+    Status.Tag status
 
     Date dateCreated
 
@@ -24,7 +24,7 @@ class Tag implements ReviewNecessityAware {
     static constraints = {
         name(nullable: false, unique: true)
         status(nullable: false, validator: {val, obj ->
-            if(val == Status.PROMOTED && !obj.root){
+            if(val == Status.Tag.PROMOTED && !obj.root){
                 return 'tag.status.aliasTagAsPromoted'
             } else {
                 return true
@@ -40,10 +40,10 @@ class Tag implements ReviewNecessityAware {
 
     @Override
     boolean shouldBeReviewed() {
-        return status == Status.TO_BE_REVIEWED
+        return status == Status.Tag.TO_BE_REVIEWED
     }
 
     boolean isPromoted(){
-        return status == Status.PROMOTED
+        return status == Status.Tag.PROMOTED
     }
 }

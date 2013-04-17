@@ -1,13 +1,22 @@
 package vanity.article
 
-public enum Status {
+import org.apache.http.annotation.Immutable
 
-    PUBLISHED,
-    TO_BE_REVIEWED,
-    PROMOTED
+@Immutable
+public final class Status {
 
-    public static final List<Status> OPEN_STATUSES = [PUBLISHED, PROMOTED].asImmutable()
+    public enum Tag {
 
-    public static final List<Status> CLOSED_STATUSES = [TO_BE_REVIEWED].asImmutable()
+        PUBLISHED,
+
+        TO_BE_REVIEWED,
+
+        PROMOTED
+
+        public static final List<Status> OPEN_STATUSES = [PUBLISHED, PROMOTED].asImmutable()
+
+        public static final List<Status> CLOSED_STATUSES = [TO_BE_REVIEWED].asImmutable()
+    }
+
 }
 
