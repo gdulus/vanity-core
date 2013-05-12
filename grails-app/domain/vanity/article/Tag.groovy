@@ -4,6 +4,8 @@ class Tag implements ReviewNecessityAware {
 
     String name
 
+    String hash
+
     Status.Tag status
 
     Date dateCreated
@@ -35,7 +37,16 @@ class Tag implements ReviewNecessityAware {
     static mapping = {
         version false
         name(index:true, indexAttributes: [unique:true, dropDups:false])
+        hash(nullable:false, blank: false, unique: true)
         status(index:true)
+    }
+
+    def beforeValidate(){
+        setUpHash()
+    }
+
+    def beforeInsert() {
+        setUpHash()
     }
 
     @Override
@@ -45,5 +56,11 @@ class Tag implements ReviewNecessityAware {
 
     boolean isPromoted(){
         return status == Status.Tag.PROMOTED
+    }
+
+    private void setUpHash(){
+        if (name && !hash){
+            hash = "${name}vanity-tag".encodeAsMD5()
+        }
     }
 }

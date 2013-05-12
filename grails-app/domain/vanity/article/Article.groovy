@@ -1,7 +1,5 @@
 package vanity.article
 
-import vanity.ContentSource
-
 class Article implements ReviewNecessityAware {
 
     String externalId

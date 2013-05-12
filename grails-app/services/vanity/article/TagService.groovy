@@ -11,7 +11,7 @@ class TagService {
     static transactional = false
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    Tag getOrCreate(final String tagName) {
+    public Tag getOrCreate(final String tagName) {
         // validate input
         Validate.notEmpty(tagName, 'Provide not null tag')
         // prepare tag name and preform creation/find action
@@ -52,8 +52,17 @@ class TagService {
         return Tag.list(sort:'name')
     }
 
+    @Transactional(readOnly = true)
+    public List<Tag> getAllTagsByStatus(final Status.Tag status){
+        if (!status){
+            return Collections.emptyList()
+        }
+
+        return Tag.findAllByStatus(status, [sort:'name'])
+    }
+
     @Transactional
-    boolean changeTagStatus(final Long id, final Status.Tag status) {
+    public boolean changeTagStatus(final Long id, final Status.Tag status) {
         // validate input
         Validate.notEmpty(id, 'Provide not null tag id')
         Validate.notEmpty(status, 'Provide not null tag status')

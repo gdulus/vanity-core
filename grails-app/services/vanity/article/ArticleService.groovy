@@ -10,7 +10,7 @@ class ArticleService {
     TagService tagService
 
     @Transactional
-    Article create(final Set<String> stringTags, final Closure baseFieldsInitializer) {
+    Article create(final Set<String> stringTags, final ContentSource.Target contentSourceTarget, final Closure baseFieldsInitializer) {
         // validate input
         Validate.notNull(baseFieldsInitializer, 'Provide initializer object to setup base fields')
         Validate.isTrue(stringTags && !stringTags.isEmpty(), 'Provide not null and not empty tags')
@@ -19,6 +19,8 @@ class ArticleService {
         baseFieldsInitializer.call(article)
         // initialize tags
         stringTags.each({article.addToTags(tagService.getOrCreate(it))})
+        // find content source
+        article.source = ContentSource.findByTarget(contentSourceTarget)
         // try to save it
         if (!article.save()){
             log.error("Error during saving article ${article}: ${article.errors}")
