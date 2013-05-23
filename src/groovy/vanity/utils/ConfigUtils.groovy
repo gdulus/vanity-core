@@ -7,13 +7,15 @@ import groovy.util.logging.Log4j
 @Singleton
 class ConfigUtils {
 
+    private static final String RELATIVE_PATH = '.vanity'
+
     public List<String> externalConfig(final def grails, final File userHome, final Closure dataCollector){
         // prepare list in paths to external config will be located
         List<String> files = []
         // enhance setter class to support "file" method
         dataCollector.metaClass.file = {final String fileName ->
             // build path to the file
-            String configFilePath = "${userHome}/.grails/vanity/${Environment.current}/${fileName}"
+            String configFilePath = "${userHome}/${RELATIVE_PATH}/${Environment.current}/${fileName}"
             // validate existence of config file
             if (!(new File(configFilePath).exists())){
                 throw new IllegalArgumentException("Cant find config file: ${configFilePath}")

@@ -1,6 +1,6 @@
 package vanity.article
 
-import org.apache.http.annotation.Immutable
+import groovy.transform.Immutable
 
 @Immutable
 public final class Status {

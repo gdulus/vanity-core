@@ -5,8 +5,6 @@ import org.springframework.transaction.annotation.Transactional
 
 class ArticleService {
 
-    static transactional = false
-
     TagService tagService
 
     @Transactional

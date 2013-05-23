@@ -8,7 +8,9 @@ class TagService {
 
     private static final int MAX_NUMBER_OF_RETRIES = 10
 
-    static transactional = false
+    private static String cleanUpTagName(final String tagName){
+        return tagName.trim().toLowerCase()
+    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Tag getOrCreate(final String tagName) {
@@ -17,10 +19,6 @@ class TagService {
         // prepare tag name and preform creation/find action
         String cleanedUpTagName = cleanUpTagName(tagName)
         return executeGetOrCreate(Tag.findByName(cleanedUpTagName), cleanedUpTagName)
-    }
-
-    private String cleanUpTagName(final String tagName){
-        return tagName.trim().toLowerCase()
     }
 
     private Tag executeGetOrCreate(final Tag tag, final String cleanedUpTagName, final counter = 0){
