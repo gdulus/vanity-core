@@ -25,6 +25,7 @@ class Tag implements ReviewNecessityAware {
 
     static constraints = {
         name(nullable: false, unique: true)
+        hash(nullable:false, blank: false, unique: true, maxSize:32)
         status(nullable: false, validator: {val, obj ->
             if(val == Status.Tag.PROMOTED && !obj.root){
                 return 'tag.status.aliasTagAsPromoted'
@@ -36,17 +37,6 @@ class Tag implements ReviewNecessityAware {
 
     static mapping = {
         version false
-        name(index:true, indexAttributes: [unique:true, dropDups:false])
-        hash(nullable:false, blank: false, unique: true)
-        status(index:true)
-    }
-
-    def beforeValidate(){
-        setUpHash()
-    }
-
-    def beforeInsert() {
-        setUpHash()
     }
 
     @Override
@@ -56,6 +46,14 @@ class Tag implements ReviewNecessityAware {
 
     boolean isPromoted(){
         return status == Status.Tag.PROMOTED
+    }
+
+    def beforeValidate(){
+        setUpHash()
+    }
+
+    def beforeInsert() {
+        setUpHash()
     }
 
     private void setUpHash(){

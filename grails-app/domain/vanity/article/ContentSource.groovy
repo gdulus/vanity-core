@@ -11,6 +11,10 @@ class ContentSource {
         priority(nullable:false)
     }
 
+    static mapping = {
+        version false
+    }
+
     public static enum Target {
 
         PUDELEK('http://www.pudelek.pl/')

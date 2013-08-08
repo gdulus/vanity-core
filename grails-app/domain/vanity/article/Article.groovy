@@ -1,5 +1,7 @@
 package vanity.article
 
+import org.apache.commons.lang.StringUtils
+
 class Article implements ReviewNecessityAware {
 
     String externalId
@@ -18,6 +20,8 @@ class Article implements ReviewNecessityAware {
 
     Integer rank = 0
 
+    List<Tag> tags
+
     Date dateCreated
 
     Date lastUpdated
@@ -27,12 +31,13 @@ class Article implements ReviewNecessityAware {
     ]
 
     static transients = [
-        'shouldBeReviewed'
+        'shouldBeReviewed',
+        'shortBody'
     ]
 
     static constraints = {
         externalId(nullable:false, unique: 'source')
-        hash(nullable:false, blank: false, unique: true)
+        hash(nullable:false, blank: false, unique: true, maxSize:32)
         source(nullable: false)
         body(nullable: false, blank: false)
         title(nullable: false, blank: false)
@@ -46,12 +51,8 @@ class Article implements ReviewNecessityAware {
         body(type: 'text')
     }
 
-    def beforeValidate(){
-        setUpHash()
-    }
-
-    def beforeInsert() {
-        setUpHash()
+    String getShortBody(){
+        return StringUtils.abbreviate(body, 500)
     }
 
     @Override
@@ -69,6 +70,14 @@ class Article implements ReviewNecessityAware {
         }
         // if there is no tas with state to be reviewed then all is ok
         return (tags.find({it.shouldBeReviewed()}) != null)
+    }
+
+    def beforeValidate(){
+        setUpHash()
+    }
+
+    def beforeInsert() {
+        setUpHash()
     }
 
     private void setUpHash(){

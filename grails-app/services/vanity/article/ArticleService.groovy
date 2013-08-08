@@ -46,4 +46,25 @@ class ArticleService {
         )
         return result.collect {Article.get(it)}
     }
+
+    @Transactional(readOnly = true)
+    public List<Article> findByHashCodes(final List<String> hashCodes){
+        List<Long> result = (List<Long>)Article.executeQuery('''
+            select
+                id
+            from
+                Article
+            where
+                hash in :searchResultArticleHashes
+            order by
+                source.priority desc,
+                publicationDate desc
+            ''',
+            [
+                searchResultArticleHashes:hashCodes
+            ]
+        )
+
+        return result.collect {Article.read(it)}
+    }
 }

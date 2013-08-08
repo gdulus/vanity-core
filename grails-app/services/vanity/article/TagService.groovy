@@ -41,7 +41,12 @@ class TagService {
     }
 
     @Transactional(readOnly = true)
-    public List<Tag> getAllValidTags(){
+    public Tag readByHash(final String hash){
+        return hash ? Tag.findByHash(hash) : null
+    }
+
+    @Transactional(readOnly = true)
+    public List<Tag> getAllValidRootTags(){
         return Tag.findAllByStatusInListAndRoot(Status.Tag.OPEN_STATUSES, true, [sort:'name'])
     }
 
