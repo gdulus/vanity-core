@@ -1,5 +1,9 @@
 package vanity.article
 
+import groovy.transform.ToString
+import vanity.utils.DomainUtils
+
+@ToString
 class Tag implements ReviewNecessityAware {
 
     String name
@@ -20,14 +24,15 @@ class Tag implements ReviewNecessityAware {
 
     static transients = [
         'shouldBeReviewed',
-        'isPromoted'
+        'isPromoted',
+        'hasChildren'
     ]
 
     static constraints = {
-        name(nullable: false, unique: true)
-        hash(nullable:false, blank: false, unique: true, maxSize:32)
-        status(nullable: false, validator: {val, obj ->
-            if(val == Status.Tag.PROMOTED && !obj.root){
+        name(nullable: false, blank: false, unique: true)
+        hash(nullable: false, blank: false, unique: true, maxSize: 32)
+        status(nullable: false, validator: { val, obj ->
+            if (val == Status.Tag.PROMOTED && !obj.root) {
                 return 'tag.status.aliasTagAsPromoted'
             } else {
                 return true
@@ -44,11 +49,11 @@ class Tag implements ReviewNecessityAware {
         return status == Status.Tag.TO_BE_REVIEWED
     }
 
-    boolean isPromoted(){
+    boolean isPromoted() {
         return status == Status.Tag.PROMOTED
     }
 
-    def beforeValidate(){
+    def beforeValidate() {
         setUpHash()
     }
 
@@ -56,9 +61,14 @@ class Tag implements ReviewNecessityAware {
         setUpHash()
     }
 
-    private void setUpHash(){
-        if (name && !hash){
-            hash = "${name}vanity-tag".encodeAsMD5()
+    private void setUpHash() {
+        if (name && !hash) {
+            hash = DomainUtils.generateHash(this.class, name)
         }
     }
+
+    public boolean hasChildren() {
+        childTags && childTags.size() > 0
+    }
+
 }

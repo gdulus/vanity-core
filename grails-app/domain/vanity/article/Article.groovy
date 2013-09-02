@@ -1,6 +1,7 @@
 package vanity.article
 
 import org.apache.commons.lang.StringUtils
+import vanity.utils.DomainUtils
 
 class Article implements ReviewNecessityAware {
 
@@ -82,7 +83,7 @@ class Article implements ReviewNecessityAware {
 
     private void setUpHash(){
         if (url && !hash){
-            hash = "${url}vanity-article".encodeAsMD5()
+            hash = DomainUtils.generateHash(this.class, url)
         }
     }
 }

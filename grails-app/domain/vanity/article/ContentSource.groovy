@@ -13,11 +13,13 @@ class ContentSource {
 
     static mapping = {
         version false
+        target index: 'content_source_target_idx'
     }
 
     public static enum Target {
 
-        PUDELEK('http://www.pudelek.pl/')
+        PUDELEK('http://www.pudelek.pl/'),
+        FAKT('http://www.fakt.pl/')
 
         final String address
 

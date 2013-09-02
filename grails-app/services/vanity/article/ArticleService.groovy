@@ -16,11 +16,11 @@ class ArticleService {
         Article article = new Article()
         baseFieldsInitializer.call(article)
         // initialize tags
-        stringTags.each({article.addToTags(tagService.getOrCreate(it))})
+        stringTags.each({ article.addToTags(tagService.getOrCreate(it)) })
         // find content source
         article.source = ContentSource.findByTarget(contentSourceTarget)
         // try to save it
-        if (!article.save()){
+        if (!article.save()) {
             log.error("Error during saving article ${article}: ${article.errors}")
             return null
         }
@@ -29,8 +29,8 @@ class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public List<Article> getByTag(final Tag tag){
-        List<Long> result = (List<Long>)Article.executeQuery('''
+    public List<Article> getByTag(final Tag tag) {
+        List<Long> result = (List<Long>) Article.executeQuery('''
                 select
                     distinct a.id
                 from
@@ -41,30 +41,44 @@ class ArticleService {
                     t = :tag
             ''',
             [
-                tag:tag
+                tag: tag
             ]
         )
-        return result.collect {Article.get(it)}
+        return result.collect { Article.get(it) }
     }
 
     @Transactional(readOnly = true)
-    public List<Article> findByHashCodes(final List<String> hashCodes){
-        List<Long> result = (List<Long>)Article.executeQuery('''
+    public List<Article> findByHashCodes(final List<String> hashCodes) {
+        List<Long> result = (List<Long>) Article.executeQuery('''
             select
                 id
             from
                 Article
             where
-                hash in :searchResultArticleHashes
+                hash in :hashCodes
             order by
                 source.priority desc,
                 publicationDate desc
             ''',
             [
-                searchResultArticleHashes:hashCodes
+                hashCodes: hashCodes
             ]
         )
 
-        return result.collect {Article.read(it)}
+        return result.collect { Article.read(it) }
+    }
+
+    @Transactional(readOnly = true)
+    public Article findByHashCode(final String hashCode) {
+        Article.executeQuery('''
+            from
+                Article
+            where
+                hash = :hashCode
+            ''',
+            [
+                hashCode: hashCode,
+            ]
+        ).first()
     }
 }

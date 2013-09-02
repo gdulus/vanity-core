@@ -1,18 +1,20 @@
 package vanity.article
 
+import groovy.sql.Sql
+import groovy.util.logging.Slf4j
 import org.apache.commons.lang.Validate
-import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
+import vanity.utils.DomainUtils
 
+import javax.sql.DataSource
+import java.sql.SQLException
+
+@Slf4j
 class TagService {
 
-    private static final int MAX_NUMBER_OF_RETRIES = 10
+    DataSource dataSource
 
-    private static String cleanUpTagName(final String tagName){
-        return tagName.trim().toLowerCase()
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public Tag getOrCreate(final String tagName) {
         // validate input
         Validate.notEmpty(tagName, 'Provide not null tag')
@@ -21,47 +23,78 @@ class TagService {
         return executeGetOrCreate(Tag.findByName(cleanedUpTagName), cleanedUpTagName)
     }
 
-    private Tag executeGetOrCreate(final Tag tag, final String cleanedUpTagName, final counter = 0){
-        // ok tag exists, return value
-        if (tag){
+    private static String cleanUpTagName(final String tagName) {
+        return tagName.trim().toLowerCase()
+    }
+
+    private Tag executeGetOrCreate(final Tag tag, final String cleanedUpTagName) {
+        if (tag) {
             return tag
         }
-        // check if we haven't exceed number of retries
-        if (counter > MAX_NUMBER_OF_RETRIES){
-            throw new IllegalStateException('To much retries')
+
+        try {
+            Sql sql = new Sql(dataSource)
+            sql.executeInsert(
+                [
+                    name: cleanedUpTagName,
+                    hash: DomainUtils.generateHash(Tag.class, cleanedUpTagName),
+                    status: Status.Tag.TO_BE_REVIEWED.toString(),
+                    root:false
+                   ],
+                '''
+                    INSERT INTO
+                        tag(
+                            id,
+                            name,
+                            hash,
+                            status,
+                            date_created,
+                            last_updated,
+                            root
+                        )
+                    SELECT
+                        nextval('hibernate_sequence'),
+                        :name,
+                        :hash,
+                        :status,
+                        now(),
+                        now(),
+                        :root
+                    WHERE
+                        NOT EXISTS (
+                            SELECT 1 FROM tag WHERE hash = :hash
+                        );
+                '''
+            )
+        } catch(SQLException exp) {
+            log.warn('Exception during creating tag {}', tag)
         }
-        // tag not exist, prepare it
-        Tag newTag = new Tag(name: cleanedUpTagName, status: Status.Tag.TO_BE_REVIEWED)
-        // try to save it - if its going to fail, then we have uniqueness issue
-        if (newTag.save(flush: true)){
-            return newTag
-        }
-        // check if other thread created this tag
-        return executeGetOrCreate(Tag.findByName(cleanedUpTagName), cleanedUpTagName, ++counter)
+
+        return Tag.findByName(cleanedUpTagName)
     }
 
     @Transactional(readOnly = true)
-    public Tag readByHash(final String hash){
+    public Tag readByHash(final String hash) {
         return hash ? Tag.findByHash(hash) : null
     }
 
     @Transactional(readOnly = true)
-    public List<Tag> getAllValidRootTags(){
-        return Tag.findAllByStatusInListAndRoot(Status.Tag.OPEN_STATUSES, true, [sort:'name'])
+    public List<Tag> getAllValidRootTags() {
+        return Tag.findAllByStatusInListAndRoot(Status.Tag.OPEN_STATUSES, true, [sort: 'name'])
     }
 
     @Transactional(readOnly = true)
-    public List<Tag> getAllTags(){
-        return Tag.list(sort:'name')
+    public List<Tag> getAllTags() {
+        return Tag.list(sort: 'name')
     }
 
     @Transactional(readOnly = true)
-    public List<Tag> getAllTagsByStatus(final Status.Tag status){
-        if (!status){
+    public List<Tag> getAllTagsByStatus(final Status.Tag status) {
+        if (!status) {
             return Collections.emptyList()
         }
 
-        return Tag.findAllByStatus(status, [sort:'name'])
+        return Tag.findAllByStatus(status, [sort: 'name'])
     }
 
     @Transactional
@@ -72,7 +105,7 @@ class TagService {
         // prepare tag name and preform creation/find action
         Tag tag = Tag.get(id)
         // check if there is anything to update
-        if (!tag){
+        if (!tag) {
             return false
         }
         // execute update
