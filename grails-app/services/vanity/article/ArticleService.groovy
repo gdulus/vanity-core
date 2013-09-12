@@ -80,15 +80,6 @@ class ArticleService {
 
     @Transactional(readOnly = true)
     public Article findByHashCode(final String hashCode) {
-        Article.executeQuery('''
-            from
-                Article
-            where
-                hash = :hashCode
-            ''',
-            [
-                hashCode: hashCode,
-            ]
-        ).first()
+        Article.findByHash(hashCode)
     }
 }
