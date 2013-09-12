@@ -13,4 +13,21 @@ class ArticleClickService {
         Validate.notNull(article, 'Provide not null article object')
         ArticleClick.withNewSession { new ArticleClick(article: article).save(flush: true) }
     }
+
+    @Transactional
+    public Integer deleteAllByArticleIds(final Set<Long> articleIds){
+        if (!articleIds){
+            return 0
+        }
+
+        return ArticleClick.executeUpdate('''
+            delete from
+                ArticleClick
+            where
+                article.id in (:articleIds)
+        ''',
+        [
+            articleIds:articleIds
+        ])
+    }
 }
