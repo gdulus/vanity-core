@@ -33,12 +33,13 @@ class Article implements ReviewNecessityAware {
 
     static transients = [
         'shouldBeReviewed',
-        'shortBody'
+        'shortBody',
+        'flatTagSet'
     ]
 
     static constraints = {
-        externalId(nullable:false, unique: 'source')
-        hash(nullable:false, blank: false, unique: true, maxSize:32)
+        externalId(nullable: false, unique: 'source')
+        hash(nullable: false, blank: false, unique: true, maxSize: 32)
         source(nullable: false)
         body(nullable: false, blank: false)
         title(nullable: false, blank: false)
@@ -52,28 +53,28 @@ class Article implements ReviewNecessityAware {
         body(type: 'text')
     }
 
-    String getShortBody(){
+    String getShortBody() {
         return StringUtils.abbreviate(body, 500)
     }
 
     @Override
     public String toString() {
         return "Article{" +
-                "url='" + url + '\'' +
-                '}';
+            "url='" + url + '\'' +
+            '}';
     }
 
     @Override
     boolean shouldBeReviewed() {
         // this operation can be performed only on instance with tags
-        if (!tags){
+        if (!tags) {
             throw new IllegalStateException('Seems that this instance has no tags. Cant determine review necessity.')
         }
         // if there is no tas with state to be reviewed then all is ok
-        return (tags.find({it.shouldBeReviewed()}) != null)
+        return (tags.find({ it.shouldBeReviewed() }) != null)
     }
 
-    def beforeValidate(){
+    def beforeValidate() {
         setUpHash()
     }
 
@@ -81,9 +82,26 @@ class Article implements ReviewNecessityAware {
         setUpHash()
     }
 
-    private void setUpHash(){
-        if (url && !hash){
+    private void setUpHash() {
+        if (url && !hash) {
             hash = DomainUtils.generateHash(this.class, url)
         }
     }
+
+    Set<String> flatTagSet() {
+        return collectFlatTagSet(tags, [] as Set<String>)
+    }
+
+    private Set<String> collectFlatTagSet(final Set<Tag> tags, final Set<String> tagsNames) {
+        tags.each { final Tag tag ->
+            if (tag.hasChildren()) {
+                flatTagSet(tag.childTags, tagsNames)
+            }
+
+            tagsNames << tag.name
+        }
+
+        return tagsNames
+    }
+
 }

@@ -8,10 +8,10 @@ class ArticleService {
     TagService tagService
 
     @Transactional
-    void updateRank(final Long articleId, final Integer rank){
+    void updateRank(final Long articleId, final Integer rank) {
         Article article = Article.get(articleId)
 
-        if (article){
+        if (article) {
             article.rank += rank
             article.save()
         }
@@ -40,28 +40,25 @@ class ArticleService {
 
     @Transactional(readOnly = true)
     public List<Article> getByTag(final Tag tag) {
-        List<Long> result = (List<Long>) Article.executeQuery('''
-                select
-                    distinct a.id
-                from
-                    Article a
-                inner join
-                    a.tags t
-                where
-                    t = :tag
+        return Article.executeQuery('''
+            select
+                distinct a
+            from
+                Article a
+            inner join
+                a.tags t
+            where
+                t = :tag
             ''',
             [
                 tag: tag
             ]
         )
-        return result.collect { Article.get(it) }
     }
 
     @Transactional(readOnly = true)
     public List<Article> findByHashCodes(final List<String> hashCodes) {
-        List<Long> result = (List<Long>) Article.executeQuery('''
-            select
-                id
+        return Article.executeQuery('''
             from
                 Article
             where
@@ -74,12 +71,15 @@ class ArticleService {
                 hashCodes: hashCodes
             ]
         )
-
-        return result.collect { Article.read(it) }
     }
 
     @Transactional(readOnly = true)
     public Article findByHashCode(final String hashCode) {
         Article.findByHash(hashCode)
+    }
+
+    @Transactional(readOnly = true)
+    public List<Article> list() {
+        return Article.list()
     }
 }
