@@ -25,7 +25,8 @@ class Tag implements ReviewNecessityAware {
     static transients = [
         'shouldBeReviewed',
         'isPromoted',
-        'hasChildren'
+        'hasChildren',
+        'flatChildrenSet'
     ]
 
     static constraints = {
@@ -69,6 +70,22 @@ class Tag implements ReviewNecessityAware {
 
     public boolean hasChildren() {
         childTags && childTags.size() > 0
+    }
+
+    Set<String> flatChildrenSet() {
+        return collectFlatChildrenSet(childTags as Set, [] as Set<String>)
+    }
+
+    private Set<String> collectFlatChildrenSet(final Set<Tag> tags, final Set<String> tagsNames) {
+        tags.each { final Tag tag ->
+            if (tag.hasChildren()) {
+                collectFlatChildrenSet(tag.childTags as Set, tagsNames)
+            }
+
+            tagsNames << tag.name
+        }
+
+        return tagsNames
     }
 
 }

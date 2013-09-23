@@ -89,19 +89,6 @@ class Article implements ReviewNecessityAware {
     }
 
     Set<String> flatTagSet() {
-        return collectFlatTagSet(tags as Set, [] as Set<String>)
+        return (Set<String>) tags.sum { Tag tag -> tag.flatChildrenSet() }
     }
-
-    private Set<String> collectFlatTagSet(final Set<Tag> tags, final Set<String> tagsNames) {
-        tags.each { final Tag tag ->
-            if (tag.hasChildren()) {
-                collectFlatTagSet(tag.childTags as Set, tagsNames)
-            }
-
-            tagsNames << tag.name
-        }
-
-        return tagsNames
-    }
-
 }
