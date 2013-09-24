@@ -46,6 +46,7 @@ class Article implements ReviewNecessityAware {
         url(nullable: false, blank: false, url: true)
         publicationDate(nullable: false)
         tags(nullable: false, minSize: 1)
+        rank(nullable: false)
     }
 
     static mapping = {
@@ -92,3 +93,4 @@ class Article implements ReviewNecessityAware {
         return (Set<String>) tags.sum { Tag tag -> tag.flatChildrenSet() }
     }
 }
+

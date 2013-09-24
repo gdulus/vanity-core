@@ -15,6 +15,16 @@ class TagService {
     DataSource dataSource
 
     @Transactional
+    void updateRank(final Long tagId, final Integer rank) {
+        Tag tag = Tag.get(tagId)
+
+        if (tag) {
+            tag.rank += rank
+            tag.save()
+        }
+    }
+
+    @Transactional
     public Tag getOrCreate(final String tagName) {
         // validate input
         Validate.notEmpty(tagName, 'Provide not null tag')
@@ -39,8 +49,8 @@ class TagService {
                     name: cleanedUpTagName,
                     hash: DomainUtils.generateHash(Tag.class, cleanedUpTagName),
                     status: Status.Tag.TO_BE_REVIEWED.toString(),
-                    root:false
-                   ],
+                    root: false
+                ],
                 '''
                     INSERT INTO
                         tag(
@@ -50,7 +60,8 @@ class TagService {
                             status,
                             date_created,
                             last_updated,
-                            root
+                            root,
+                            rank
                         )
                     SELECT
                         nextval('hibernate_sequence'),
@@ -59,15 +70,16 @@ class TagService {
                         :status,
                         now(),
                         now(),
-                        :root
+                        :root,
+                        0
                     WHERE
                         NOT EXISTS (
                             SELECT 1 FROM tag WHERE hash = :hash
                         );
                 '''
             )
-        } catch(SQLException exp) {
-            log.warn('Exception during creating tag {}', tag)
+        } catch (SQLException exp) {
+            log.warn('Exception during creating tag {}', cleanedUpTagName)
         }
 
         return Tag.findByName(cleanedUpTagName)
