@@ -60,8 +60,7 @@ class TagService {
                             status,
                             date_created,
                             last_updated,
-                            root,
-                            rank
+                            root
                         )
                     SELECT
                         nextval('hibernate_sequence'),
@@ -70,8 +69,7 @@ class TagService {
                         :status,
                         now(),
                         now(),
-                        :root,
-                        0
+                        :root
                     WHERE
                         NOT EXISTS (
                             SELECT 1 FROM tag WHERE hash = :hash

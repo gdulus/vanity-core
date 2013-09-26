@@ -19,8 +19,6 @@ class Article implements ReviewNecessityAware {
 
     Date publicationDate
 
-    Integer rank = 0
-
     List<Tag> tags
 
     Date dateCreated
@@ -46,7 +44,6 @@ class Article implements ReviewNecessityAware {
         url(nullable: false, blank: false, url: true)
         publicationDate(nullable: false)
         tags(nullable: false, minSize: 1)
-        rank(nullable: false)
     }
 
     static mapping = {

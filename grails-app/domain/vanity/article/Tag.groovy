@@ -12,8 +12,6 @@ class Tag implements ReviewNecessityAware {
 
     Status.Tag status
 
-    Integer rank = 0
-
     Boolean root = false
 
     Date dateCreated
@@ -41,7 +39,6 @@ class Tag implements ReviewNecessityAware {
                 return true
             }
         })
-        rank(nullable: false)
     }
 
     static mapping = {
