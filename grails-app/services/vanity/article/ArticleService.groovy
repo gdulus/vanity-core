@@ -63,9 +63,6 @@ class ArticleService {
                 Article
             where
                 hash in :hashCodes
-            order by
-                source.priority desc,
-                publicationDate desc
             ''',
             [
                 hashCodes: hashCodes
