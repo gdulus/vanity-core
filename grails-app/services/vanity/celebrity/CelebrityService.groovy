@@ -1,15 +1,11 @@
 package vanity.celebrity
 
-import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.multipart.MultipartFile
 import vanity.article.Tag
 import vanity.pagination.PaginationBean
 
 class CelebrityService {
-
-    GrailsApplication grailsApplication
 
     @Transactional(readOnly = true)
     PaginationBean<Celebrity> listWithPagination(final GrailsParameterMap params) {
@@ -17,17 +13,16 @@ class CelebrityService {
     }
 
     @Transactional
-    boolean save(final Celebrity celebrity, final MultipartFile image){
-        if (!celebrity || !celebrity.save()){
-            return Boolean.FALSE
-        }
-
-        //String fileName = "celebrity_${celebrity.ident()}"
-        //String resultDir = grailsApplication.config.images.celebrity.resultDir
-
+    Celebrity save(final Celebrity celebrity) {
+        return celebrity.save()
     }
 
     @Transactional(readOnly = true)
+    Celebrity read(final Long id) {
+        return Celebrity.get(id)
+    }
+
+    @Transactional
     Celebrity get(final Long id) {
         return Celebrity.get(id)
     }

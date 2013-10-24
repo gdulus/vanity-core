@@ -2,6 +2,10 @@ package vanity.image.gorm
 
 class Image {
 
-    String path
+    String name
+
+    Integer width
+
+    Integer height
 
 }

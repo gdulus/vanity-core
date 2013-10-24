@@ -14,17 +14,17 @@ class Celebrity {
     Image avatar
 
     static belongsTo = [
-        tag:Tag
+        tag: Tag
     ]
 
     static constraints = {
-        firstName(nullable:true, blank:true)
-        lastName(nullable:true, blank:true)
-        description(nullable:true, blank:true)
-        tag(nullable: false, unique: true, validator:{
+        firstName(nullable: true, blank: true)
+        lastName(nullable: true, blank: true)
+        description(nullable: true, blank: true)
+        tag(nullable: false, unique: true, validator: {
             return it?.root
         })
-        avatar(nullable:true)
+        avatar(nullable: true)
     }
 
     static mapping = {
@@ -38,8 +38,8 @@ class Celebrity {
     @Override
     public String toString() {
         return "Celebrity{" +
-                "tag='" + tag + '\'' +
-                '}';
+            "tag='" + tag + '\'' +
+            '}';
     }
 
 }
