@@ -79,4 +79,9 @@ class ArticleService {
     public List<Article> list() {
         return Article.list()
     }
+
+    @Transactional(readOnly = true)
+    public Integer count() {
+        return Article.count()
+    }
 }

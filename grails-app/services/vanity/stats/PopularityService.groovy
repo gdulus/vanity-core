@@ -52,10 +52,34 @@ class PopularityService {
                 fromDate: fromDate.clearTime()
             ],
             [
-                max: max
+                max: max,
             ])
 
         return result.collect { PopularityDTO.valueOf(it) }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Article> getTopArticles(final Integer max, final Integer offset) {
+        return (List<Article>) ArticlePopularity.executeQuery('''
+            select
+                article
+            from
+                ArticlePopularity pop
+                join pop.article article
+            group by
+                article
+            order by
+                max(pop.rank) desc
+            ''',
+            [
+                max: max,
+                offset: offset
+            ])
+    }
+
+    @Transactional(readOnly = true)
+    public Integer countTopArticles() {
+        return ArticlePopularity.count()
     }
 
     @Transactional(readOnly = true)
@@ -81,6 +105,32 @@ class PopularityService {
             ''',
             [
                 fromDate: fromDate.clearTime(),
+                statuses: Status.Tag.OPEN_STATUSES
+            ],
+            [
+                max: max
+            ])
+
+        return result.collect { PopularityDTO.valueOf(it) }
+    }
+
+    @Transactional(readOnly = true)
+    public List<PopularityDTO> findTopTags(final Integer max) {
+        List<Object[]> result = (List<Object[]>) TagPopularity.executeQuery('''
+            select
+                tag.id, max(pop.rank)
+            from
+                TagPopularity pop
+                join pop.tag tag
+            where
+                tag.root = true
+                and tag.status in :statuses
+            group by
+                tag.id
+            order by
+                max(pop.rank) desc
+            ''',
+            [
                 statuses: Status.Tag.OPEN_STATUSES
             ],
             [
