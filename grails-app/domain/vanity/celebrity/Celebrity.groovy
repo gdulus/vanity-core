@@ -1,9 +1,11 @@
 package vanity.celebrity
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import vanity.article.Tag
 import vanity.image.gorm.Image
+import vanity.image.gorm.ImageContainer
 
-class Celebrity {
+class Celebrity implements ImageContainer {
 
     String firstName
 
@@ -34,6 +36,21 @@ class Celebrity {
     static embedded = [
         'avatar'
     ]
+
+    static transients = [
+        'getImagePath',
+        'hasImage'
+    ]
+
+    @Override
+    public String getImagePath(final GrailsApplication grailsApplication) {
+        return grailsApplication.config.files.celebrity.host + avatar.name
+    }
+
+    @Override
+    boolean hasImage() {
+        return avatar != null
+    }
 
     @Override
     public String toString() {

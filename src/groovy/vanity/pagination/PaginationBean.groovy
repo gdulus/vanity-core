@@ -11,7 +11,7 @@ class PaginationBean<T> {
         this.totalCount = totalCount
     }
 
-    boolean isEmpty(){
-        !elements || elements.isEmpty()
+    boolean isEmpty() {
+        return !elements
     }
 }

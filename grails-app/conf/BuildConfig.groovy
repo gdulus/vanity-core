@@ -7,9 +7,9 @@ grails.project.source.level = 1.6
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
 // uncomment (and adjust settings) to fork the JVM to isolate classpaths
-//grails.project.fork = [
-//   run: [maxMemory:1024, minMemory:64, debug:false, maxPerm:256]
-//]
+grails.project.fork = [
+    run: false
+]
 
 grails.project.dependency.resolution = {
     inherits("global") {}
