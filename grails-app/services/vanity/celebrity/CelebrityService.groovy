@@ -12,21 +12,6 @@ class CelebrityService {
         return new PaginationBean<Celebrity>(Celebrity.list(params), Celebrity.count())
     }
 
-    @Transactional
-    Celebrity save(final Celebrity celebrity) {
-        return celebrity.save()
-    }
-
-    @Transactional(readOnly = true)
-    Celebrity read(final Long id) {
-        return Celebrity.get(id)
-    }
-
-    @Transactional
-    Celebrity get(final Long id) {
-        return Celebrity.get(id)
-    }
-
     @Transactional(readOnly = true)
     Celebrity findByTag(final Tag tag) {
         return Celebrity.findByTag(tag)
