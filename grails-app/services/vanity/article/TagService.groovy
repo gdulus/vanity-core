@@ -15,16 +15,6 @@ class TagService {
     DataSource dataSource
 
     @Transactional
-    void updateRank(final Long tagId, final Integer rank) {
-        Tag tag = Tag.get(tagId)
-
-        if (tag) {
-            tag.rank += rank
-            tag.save()
-        }
-    }
-
-    @Transactional
     public Tag getOrCreate(final String tagName) {
         // validate input
         Validate.notEmpty(tagName, 'Provide not null tag')

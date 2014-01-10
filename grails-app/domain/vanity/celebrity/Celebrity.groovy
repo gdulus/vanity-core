@@ -39,7 +39,8 @@ class Celebrity implements ImageContainer {
 
     static transients = [
         'getImagePath',
-        'hasImage'
+        'hasImage',
+        'getFullName'
     ]
 
     @Override
@@ -50,6 +51,10 @@ class Celebrity implements ImageContainer {
     @Override
     boolean hasImage() {
         return avatar != null
+    }
+
+    String getFullName() {
+        return "${firstName} ${lastName}"
     }
 
     @Override

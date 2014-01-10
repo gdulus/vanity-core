@@ -8,16 +8,6 @@ class ArticleService {
     TagService tagService
 
     @Transactional
-    void updateRank(final Long articleId, final Integer rank) {
-        Article article = Article.get(articleId)
-
-        if (article) {
-            article.rank += rank
-            article.save()
-        }
-    }
-
-    @Transactional
     Article create(final Set<String> stringTags, final ContentSource.Target contentSourceTarget, final Closure baseFieldsInitializer) {
         // validate input
         Validate.notNull(baseFieldsInitializer, 'Provide initializer object to setup base fields')
@@ -83,5 +73,10 @@ class ArticleService {
     @Transactional(readOnly = true)
     public Integer count() {
         return Article.count()
+    }
+
+    @Transactional(readOnly = true)
+    public Article findByExternalId(final String externalId) {
+        return Article.findByExternalId(externalId)
     }
 }
