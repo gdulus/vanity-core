@@ -1,15 +1,15 @@
 package vanity.celebrity
 
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.transaction.annotation.Transactional
 import vanity.article.Tag
+import vanity.pagination.PaginationAware
 import vanity.pagination.PaginationBean
 
-class CelebrityService {
+class CelebrityService implements PaginationAware<Celebrity> {
 
     @Transactional(readOnly = true)
-    PaginationBean<Celebrity> listWithPagination(final GrailsParameterMap params) {
-        return new PaginationBean<Celebrity>(Celebrity.list(params), Celebrity.count())
+    PaginationBean<Celebrity> listWithPagination(Long max, Long offset, String sort) {
+        return new PaginationBean<Celebrity>(Celebrity.list(max: max, offset: offset, sort: sort), Celebrity.count())
     }
 
     @Transactional(readOnly = true)
