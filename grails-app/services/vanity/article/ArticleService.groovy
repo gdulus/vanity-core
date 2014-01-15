@@ -1,7 +1,6 @@
 package vanity.article
 
 import org.apache.commons.lang.Validate
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.transaction.annotation.Transactional
 import vanity.pagination.PaginationAware
 import vanity.pagination.PaginationBean
@@ -16,8 +15,8 @@ class ArticleService implements PaginationAware<Article> {
     }
 
     @Transactional(readOnly = true)
-    PaginationBean<Article> listWithPagination(final GrailsParameterMap params) {
-        return new PaginationBean<Article>(Article.list(params), Article.count())
+    Article read(final Long id) {
+        return Article.read(id)
     }
 
     @Transactional
