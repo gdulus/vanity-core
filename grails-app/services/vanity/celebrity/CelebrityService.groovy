@@ -8,6 +8,11 @@ import vanity.pagination.PaginationBean
 class CelebrityService implements PaginationAware<Celebrity> {
 
     @Transactional(readOnly = true)
+    public Celebrity read(final Long id) {
+        return Celebrity.read(id)
+    }
+
+    @Transactional(readOnly = true)
     PaginationBean<Celebrity> listWithPagination(Long max, Long offset, String sort) {
         return new PaginationBean<Celebrity>(Celebrity.list(max: max, offset: offset, sort: sort), Celebrity.count())
     }
