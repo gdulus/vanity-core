@@ -4,15 +4,50 @@ import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.Validate
 import org.springframework.transaction.annotation.Transactional
+import vanity.pagination.PaginationAware
+import vanity.pagination.PaginationBean
 import vanity.utils.DomainUtils
 
 import javax.sql.DataSource
 import java.sql.SQLException
 
 @Slf4j
-class TagService {
+class TagService implements PaginationAware<Tag> {
 
     DataSource dataSource
+
+    @Transactional(readOnly = true)
+    public Tag read(final Long id) {
+        return Tag.read(id)
+    }
+
+    @Transactional(readOnly = true)
+    public List<Tag> getParentTags(final Long id) {
+        return Tag.executeQuery("""
+            from
+                Tag t
+            where
+                :tag in elements(t.childTags)
+        """,
+            [
+                tag: Tag.load(id)
+            ]
+        )
+    }
+
+    @Transactional(readOnly = true)
+    public PaginationBean<Tag> listWithPagination(final Long max, final Long offset, final String sort) {
+        return new PaginationBean<Tag>(Tag.list(max: max, offset: offset, sort: sort), Tag.count())
+    }
+
+    @Transactional
+    public Tag create(final String tagName) {
+        // validate input
+        Validate.notEmpty(tagName, 'Provide not null tag')
+        // prepare tag name and preform creation/find action
+        String cleanedUpTagName = cleanUpTagName(tagName)
+        return executeGetOrCreate(null, cleanedUpTagName)
+    }
 
     @Transactional
     public Tag getOrCreate(final String tagName) {
