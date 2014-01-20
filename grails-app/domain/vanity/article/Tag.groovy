@@ -8,6 +8,8 @@ class Tag implements ReviewNecessityAware {
 
     String name
 
+    String normalizedName
+
     String hash
 
     Status.Tag status
@@ -30,7 +32,8 @@ class Tag implements ReviewNecessityAware {
     ]
 
     static constraints = {
-        name(nullable: false, blank: false, unique: true)
+        name(nullable: false, blank: false)
+        normalizedName(nullable: false, blank: false, unique: true)
         hash(nullable: false, blank: false, unique: true, maxSize: 32)
         status(nullable: false, validator: { val, obj ->
             if (val == Status.Tag.PROMOTED && !obj.root) {
@@ -45,10 +48,6 @@ class Tag implements ReviewNecessityAware {
         version false
     }
 
-    public static String clearName(final String tagName) {
-        tagName.trim()
-    }
-
     @Override
     boolean shouldBeReviewed() {
         return status == Status.Tag.TO_BE_REVIEWED
@@ -60,10 +59,18 @@ class Tag implements ReviewNecessityAware {
 
     def beforeValidate() {
         setUpHash()
+        setUpNormalizedName()
     }
 
     def beforeInsert() {
         setUpHash()
+        setUpNormalizedName()
+    }
+
+    private void setUpNormalizedName() {
+        if (name && !normalizedName) {
+            normalizedName = name.encodeAsPrettyUrl()
+        }
     }
 
     private void setUpHash() {

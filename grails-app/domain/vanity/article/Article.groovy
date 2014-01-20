@@ -1,8 +1,10 @@
 package vanity.article
 
+import groovy.transform.ToString
 import org.apache.commons.lang.StringUtils
 import vanity.utils.DomainUtils
 
+@ToString(includes = ['id', 'title'])
 class Article implements ReviewNecessityAware {
 
     String externalId
@@ -53,13 +55,6 @@ class Article implements ReviewNecessityAware {
 
     String getShortBody() {
         return StringUtils.abbreviate(body, 500)
-    }
-
-    @Override
-    public String toString() {
-        return "Article{" +
-            "url='" + url + '\'' +
-            '}';
     }
 
     @Override

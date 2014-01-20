@@ -1,15 +1,12 @@
 package vanity.article
 
-import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.Validate
 import org.springframework.transaction.annotation.Transactional
 import vanity.pagination.PaginationAware
 import vanity.pagination.PaginationBean
-import vanity.utils.DomainUtils
 
 import javax.sql.DataSource
-import java.sql.SQLException
 
 @Slf4j
 class TagService implements PaginationAware<Tag> {
@@ -44,60 +41,30 @@ class TagService implements PaginationAware<Tag> {
     public Tag getOrCreate(final String tagName) {
         // validate input
         Validate.notEmpty(tagName, 'Provide not null tag')
-        // prepare tag name and preform creation/find action
-        String cleanedUpTagName = Tag.clearName(tagName)
-        return executeGetOrCreate(Tag.findByName(cleanedUpTagName), cleanedUpTagName)
-    }
+        String normalizedName = tagName.encodeAsPrettyUrl()
+        // try to find
+        Tag tag = Tag.findByNormalizedName(normalizedName)
+        // try to create
+        if (!tag) {
+            tag = new Tag(name: tagName, normalizedName: normalizedName, status: Status.Tag.TO_BE_REVIEWED, root: false)
+            // something wrong
+            if (!tag.save()) {
+                log.warn('Cant save tag {} due to {}', tagName, tag.errors)
+            }
 
-    private Tag executeGetOrCreate(final Tag tag, final String cleanedUpTagName) {
-        if (tag) {
-            return tag
+            tag = Tag.findByNormalizedName(normalizedName)
         }
 
-        try {
-            Sql sql = new Sql(dataSource)
-            sql.executeInsert(
-                [
-                    name: cleanedUpTagName,
-                    hash: DomainUtils.generateHash(Tag.class, cleanedUpTagName),
-                    status: Status.Tag.TO_BE_REVIEWED.toString(),
-                    root: false
-                ],
-                '''
-                    INSERT INTO
-                        tag(
-                            id,
-                            name,
-                            hash,
-                            status,
-                            date_created,
-                            last_updated,
-                            root
-                        )
-                    SELECT
-                        nextval('hibernate_sequence'),
-                        :name,
-                        :hash,
-                        :status,
-                        now(),
-                        now(),
-                        :root
-                    WHERE
-                        NOT EXISTS (
-                            SELECT 1 FROM tag WHERE hash = :hash
-                        );
-                '''
-            )
-        } catch (SQLException exp) {
-            log.error('Exception during creating tag {}', cleanedUpTagName)
+        if (!tag) {
+            throw new IllegalArgumentException("Cant save tag with name ${tag}")
         }
 
-        return Tag.findByName(cleanedUpTagName)
+        return tag
     }
 
     @Transactional(readOnly = true)
-    public Tag readByHash(final String hash) {
-        return hash ? Tag.findByHash(hash) : null
+    public Tag readByTagName(final String tagName) {
+        return Tag.findByNormalizedName(tagName)
     }
 
     @Transactional(readOnly = true)
