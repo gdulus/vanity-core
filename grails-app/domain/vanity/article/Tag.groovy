@@ -3,7 +3,7 @@ package vanity.article
 import groovy.transform.ToString
 import vanity.utils.DomainUtils
 
-@ToString
+@ToString(includes = ['id', 'name'])
 class Tag implements ReviewNecessityAware {
 
     String name
@@ -43,6 +43,10 @@ class Tag implements ReviewNecessityAware {
 
     static mapping = {
         version false
+    }
+
+    public static String clearName(final String tagName) {
+        tagName.trim()
     }
 
     @Override

@@ -41,25 +41,12 @@ class TagService implements PaginationAware<Tag> {
     }
 
     @Transactional
-    public Tag create(final String tagName) {
-        // validate input
-        Validate.notEmpty(tagName, 'Provide not null tag')
-        // prepare tag name and preform creation/find action
-        String cleanedUpTagName = cleanUpTagName(tagName)
-        return executeGetOrCreate(null, cleanedUpTagName)
-    }
-
-    @Transactional
     public Tag getOrCreate(final String tagName) {
         // validate input
         Validate.notEmpty(tagName, 'Provide not null tag')
         // prepare tag name and preform creation/find action
-        String cleanedUpTagName = cleanUpTagName(tagName)
+        String cleanedUpTagName = Tag.clearName(tagName)
         return executeGetOrCreate(Tag.findByName(cleanedUpTagName), cleanedUpTagName)
-    }
-
-    private static String cleanUpTagName(final String tagName) {
-        return tagName.trim().toLowerCase()
     }
 
     private Tag executeGetOrCreate(final Tag tag, final String cleanedUpTagName) {
@@ -102,7 +89,7 @@ class TagService implements PaginationAware<Tag> {
                 '''
             )
         } catch (SQLException exp) {
-            log.warn('Exception during creating tag {}', cleanedUpTagName)
+            log.error('Exception during creating tag {}', cleanedUpTagName)
         }
 
         return Tag.findByName(cleanedUpTagName)
