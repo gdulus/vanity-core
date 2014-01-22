@@ -7,6 +7,8 @@ import vanity.utils.DomainUtils
 @ToString(includes = ['id', 'title'])
 class Article implements ReviewNecessityAware {
 
+    private static final PREVIEW_MAX_LENGTH = 500
+
     String externalId
 
     String hash
@@ -54,7 +56,7 @@ class Article implements ReviewNecessityAware {
     }
 
     String getShortBody() {
-        return StringUtils.abbreviate(body, 500)
+        return StringUtils.abbreviate(body, PREVIEW_MAX_LENGTH)
     }
 
     @Override
