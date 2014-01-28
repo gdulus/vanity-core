@@ -73,8 +73,8 @@ class ArticleService implements PaginationAware<Article> {
     }
 
     @Transactional(readOnly = true)
-    public Article findByHashCode(final String hashCode) {
-        Article.findByHash(hashCode)
+    public List<Article> findAllFromThePointOfTime(final Date point) {
+        return Article.findAll { dateCreated >= point }
     }
 
     @Transactional(readOnly = true)

@@ -102,6 +102,11 @@ class TagService implements PaginationAware<Tag> {
         return tag.save()
     }
 
+    @Transactional(readOnly = true)
+    public List<Tag> findAllFromThePointOfTime(final Date point) {
+        return Tag.findAll { dateCreated >= point }
+    }
+
 }
 
 
