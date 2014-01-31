@@ -4,7 +4,7 @@ import groovy.transform.ToString
 import org.apache.commons.lang.StringUtils
 import vanity.utils.DomainUtils
 
-@ToString(includes = ['id', 'title'])
+@ToString(includes = ['hash', 'title'])
 class Article implements ReviewNecessityAware {
 
     private static final PREVIEW_MAX_LENGTH = 500
