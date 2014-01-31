@@ -13,6 +13,8 @@ class Article implements ReviewNecessityAware {
 
     String hash
 
+    ArticleStatus status
+
     ContentSource source
 
     String title
@@ -48,6 +50,7 @@ class Article implements ReviewNecessityAware {
         url(nullable: false, blank: false, url: true)
         publicationDate(nullable: false)
         tags(nullable: false, minSize: 1)
+        status(nullable: false)
     }
 
     static mapping = {

@@ -12,7 +12,7 @@ class Tag implements ReviewNecessityAware {
 
     String hash
 
-    Status.Tag status
+    TagStatus status
 
     Boolean root = false
 

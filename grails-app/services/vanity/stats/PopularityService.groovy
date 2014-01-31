@@ -2,8 +2,8 @@ package vanity.stats
 
 import org.springframework.transaction.annotation.Transactional
 import vanity.article.Article
-import vanity.article.Status
 import vanity.article.Tag
+import vanity.article.TagStatus
 
 class PopularityService {
 
@@ -105,7 +105,7 @@ class PopularityService {
             ''',
             [
                 fromDate: fromDate.clearTime(),
-                statuses: Status.Tag.OPEN_STATUSES
+                statuses: TagStatus.OPEN_STATUSES
             ],
             [
                 max: max
@@ -131,7 +131,7 @@ class PopularityService {
                 max(pop.rank) desc
             ''',
             [
-                statuses: Status.Tag.OPEN_STATUSES
+                statuses: TagStatus.OPEN_STATUSES
             ],
             [
                 max: max

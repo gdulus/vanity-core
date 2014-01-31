@@ -3,38 +3,17 @@ package vanity.article
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.Validate
 import org.springframework.transaction.annotation.Transactional
-import vanity.pagination.PaginationAware
-import vanity.pagination.PaginationBean
 
 import javax.sql.DataSource
 
 @Slf4j
-class TagService implements PaginationAware<Tag> {
+class TagService {
 
     DataSource dataSource
 
     @Transactional(readOnly = true)
     public Tag read(final Long id) {
         return Tag.read(id)
-    }
-
-    @Transactional(readOnly = true)
-    public List<Tag> getParentTags(final Long id) {
-        return Tag.executeQuery("""
-            from
-                Tag t
-            where
-                :tag in elements(t.childTags)
-        """,
-            [
-                tag: Tag.load(id)
-            ]
-        )
-    }
-
-    @Transactional(readOnly = true)
-    public PaginationBean<Tag> listWithPagination(final Long max, final Long offset, final String sort) {
-        return new PaginationBean<Tag>(Tag.list(max: max, offset: offset, sort: sort), Tag.count())
     }
 
     @Transactional
@@ -46,7 +25,7 @@ class TagService implements PaginationAware<Tag> {
         Tag tag = Tag.findByNormalizedName(normalizedName)
         // try to create
         if (!tag) {
-            tag = new Tag(name: tagName, normalizedName: normalizedName, status: Status.Tag.TO_BE_REVIEWED, root: false)
+            tag = new Tag(name: tagName, normalizedName: normalizedName, status: TagStatus.TO_BE_REVIEWED, root: false)
             // something wrong
             if (!tag.save()) {
                 log.warn('Cant save tag {} due to {}', tagName, tag.errors)
@@ -62,32 +41,8 @@ class TagService implements PaginationAware<Tag> {
         return tag
     }
 
-    @Transactional(readOnly = true)
-    public Tag readByTagName(final String tagName) {
-        return Tag.findByNormalizedName(tagName)
-    }
-
-    @Transactional(readOnly = true)
-    public List<Tag> getAllValidRootTags() {
-        return Tag.findAllByStatusInListAndRoot(Status.Tag.OPEN_STATUSES, true, [sort: 'name'])
-    }
-
-    @Transactional(readOnly = true)
-    public List<Tag> getAllTags() {
-        return Tag.list(sort: 'name')
-    }
-
-    @Transactional(readOnly = true)
-    public List<Tag> getAllTagsByStatus(final Status.Tag status) {
-        if (!status) {
-            return Collections.emptyList()
-        }
-
-        return Tag.findAllByStatus(status, [sort: 'name'])
-    }
-
     @Transactional
-    public boolean changeTagStatus(final Long id, final Status.Tag status) {
+    public boolean updateTagStatus(final Long id, final TagStatus status) {
         // validate input
         Validate.notEmpty(id, 'Provide not null tag id')
         Validate.notEmpty(status, 'Provide not null tag status')
@@ -103,8 +58,46 @@ class TagService implements PaginationAware<Tag> {
     }
 
     @Transactional(readOnly = true)
-    public List<Tag> findAllFromThePointOfTime(final Date point) {
-        return Tag.findAll { dateCreated >= point }
+    public Tag findByTagName(final String tagName) {
+        return Tag.findByNormalizedName(tagName)
+    }
+
+    @Transactional(readOnly = true)
+    public List<Tag> findAllByParentTags(final Long id) {
+        return Tag.executeQuery("""
+                from
+                    Tag t
+                where
+                    :tag in elements(t.childTags)
+            """,
+            [
+                tag: Tag.load(id)
+            ]
+        )
+    }
+
+    @Transactional(readOnly = true)
+    public List<Tag> findAllValidRootTags() {
+        return Tag.findAllByStatusInListAndRoot(TagStatus.OPEN_STATUSES, true, [sort: 'name'])
+    }
+
+    @Transactional(readOnly = true)
+    public List<Tag> findAll() {
+        return Tag.list(sort: 'name')
+    }
+
+    @Transactional(readOnly = true)
+    public List<Tag> findAllByStatus(final TagStatus status) {
+        if (!status) {
+            return Collections.emptyList()
+        }
+
+        return Tag.findAllByStatus(status, [sort: 'name'])
+    }
+
+    @Transactional(readOnly = true)
+    public List<Tag> findAllFromThePointOfTime(final Date point, final List<TagStatus> tagStatuses) {
+        return Tag.findAll { (dateCreated >= point || lastUpdated > point) && status in tagStatuses }
     }
 
 }

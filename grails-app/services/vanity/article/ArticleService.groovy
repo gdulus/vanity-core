@@ -2,17 +2,10 @@ package vanity.article
 
 import org.apache.commons.lang.Validate
 import org.springframework.transaction.annotation.Transactional
-import vanity.pagination.PaginationAware
-import vanity.pagination.PaginationBean
 
-class ArticleService implements PaginationAware<Article> {
+class ArticleService {
 
     TagService tagService
-
-    @Transactional(readOnly = true)
-    PaginationBean<Article> listWithPagination(final Long max, final Long offset, final String sort) {
-        return new PaginationBean<Article>(Article.list(max: max, offset: offset, sort: sort), Article.count())
-    }
 
     @Transactional(readOnly = true)
     Article read(final Long id) {
@@ -27,6 +20,7 @@ class ArticleService implements PaginationAware<Article> {
         // create article
         Article article = new Article()
         baseFieldsInitializer.call(article)
+        article.status = ArticleStatus.ACTIVE
         // initialize tags
         stringTags.each({ article.addToTags(tagService.getOrCreate(it)) })
         // find content source
@@ -41,7 +35,7 @@ class ArticleService implements PaginationAware<Article> {
     }
 
     @Transactional(readOnly = true)
-    public List<Article> getByTag(final Tag tag) {
+    public List<Article> findAllByTag(final Tag tag) {
         return Article.executeQuery('''
             select
                 distinct a
@@ -59,7 +53,7 @@ class ArticleService implements PaginationAware<Article> {
     }
 
     @Transactional(readOnly = true)
-    public List<Article> findByHashCodes(final List<String> hashCodes) {
+    public List<Article> findAllByHashCodes(final List<String> hashCodes) {
         return Article.executeQuery('''
             from
                 Article
@@ -73,22 +67,27 @@ class ArticleService implements PaginationAware<Article> {
     }
 
     @Transactional(readOnly = true)
-    public List<Article> findAllFromThePointOfTime(final Date point) {
-        return Article.findAll { dateCreated >= point }
+    public List<Article> findAllWithPublicationDateOlderThan(final Date point) {
+        return Article.findAll { publicationDate <= point && status == ArticleStatus.ACTIVE }
     }
 
     @Transactional(readOnly = true)
-    public List<Article> list() {
-        return Article.list()
+    public List<Article> findAllFromThePointOfTimeWithStatus(final Date point, final List<ArticleStatus> articleStatuses) {
+        return Article.findAll { (dateCreated >= point || lastUpdated >= point) && status in articleStatuses }
     }
 
     @Transactional(readOnly = true)
-    public Integer count() {
-        return Article.count()
+    public List<Article> findAll() {
+        return Article.findAllWhere(status: ArticleStatus.ACTIVE)
     }
 
     @Transactional(readOnly = true)
     public Article findByExternalId(final String externalId) {
         return Article.findByExternalId(externalId)
+    }
+
+    @Transactional(readOnly = true)
+    public Integer count() {
+        return Article.count()
     }
 }

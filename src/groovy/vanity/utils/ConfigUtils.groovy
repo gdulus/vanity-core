@@ -9,7 +9,7 @@ final class ConfigUtils {
     private static final String RELATIVE_PATH = '.vanity'
 
     public static List<String> externalConfig(final def grails, final File userHome, final Closure dataCollector) {
-        // prepare list in paths to external config will be located
+        // prepare findAll in paths to external config will be located
         List<String> files = []
         // enhance setter class to support "file" method
         dataCollector.metaClass.file = { final String fileName ->
