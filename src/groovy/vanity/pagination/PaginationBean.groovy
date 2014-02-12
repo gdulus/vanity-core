@@ -4,9 +4,14 @@ class PaginationBean<T> {
 
     final List<T> elements
 
-    final int totalCount
+    final Integer totalCount
 
-    PaginationBean(List<T> elements, int totalCount) {
+    PaginationBean(List<T> elements, Integer totalCount) {
+        this.elements = elements
+        this.totalCount = totalCount
+    }
+
+    PaginationBean(List<T> elements, Long totalCount) {
         this.elements = elements
         this.totalCount = totalCount
     }

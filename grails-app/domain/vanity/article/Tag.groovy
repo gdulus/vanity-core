@@ -36,7 +36,7 @@ class Tag implements ReviewNecessityAware {
         normalizedName(nullable: false, blank: false, unique: true)
         hash(nullable: false, blank: false, unique: true, maxSize: 32)
         status(nullable: false, validator: { val, obj ->
-            if (val == Status.Tag.PROMOTED && !obj.root) {
+            if (val == TagStatus.PROMOTED && !obj.root) {
                 return 'tag.status.aliasTagAsPromoted'
             } else {
                 return true
@@ -50,11 +50,11 @@ class Tag implements ReviewNecessityAware {
 
     @Override
     boolean shouldBeReviewed() {
-        return status == Status.Tag.TO_BE_REVIEWED
+        return status == TagStatus.TO_BE_REVIEWED
     }
 
     boolean isPromoted() {
-        return status == Status.Tag.PROMOTED
+        return status == TagStatus.PROMOTED
     }
 
     def beforeValidate() {

@@ -6,11 +6,13 @@ public enum TagStatus {
 
     TO_BE_REVIEWED,
 
-    PROMOTED
+    PROMOTED,
+
+    SPAM
 
     public static final List<TagStatus> OPEN_STATUSES = [PUBLISHED, PROMOTED].asImmutable()
 
-    public static final List<TagStatus> CLOSED_STATUSES = [TO_BE_REVIEWED].asImmutable()
+    public static final List<TagStatus> CLOSED_STATUSES = [TO_BE_REVIEWED, SPAM].asImmutable()
 
 }
 
