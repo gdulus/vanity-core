@@ -5,14 +5,14 @@ import groovy.util.logging.Slf4j
 
 final class ConfigUtils {
 
-    public static List<String> externalConfig(final File userHome, final Closure worker) {
-        return externalConfig(userHome.path, worker)
+    public static List<String> externalConfig(final def grails, final File userHome, final Closure worker) {
+        return externalConfig(grails, userHome.path, worker)
     }
 
-    public static List<String> externalConfig(final String userHome, final Closure worker) {
+    public static List<String> externalConfig(final def grails, final String userHome, final Closure worker) {
         Collector collector = new Collector(userHome)
         collector.with worker
-        return collector.files
+        grails.config.locations = collector.files
     }
 
     public static <T> T $as(final def configObject, final Class<T> target) {
