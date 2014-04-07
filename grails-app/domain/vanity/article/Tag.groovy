@@ -84,7 +84,7 @@ class Tag implements ReviewNecessityAware {
     }
 
     Set<String> flatChildrenSet() {
-        return collectFlatChildrenSet(childTags as Set, [] as Set<String>)
+        return collectFlatChildrenSet(childTags as Set, [name] as Set<String>)
     }
 
     private Set<String> collectFlatChildrenSet(final Set<Tag> tags, final Set<String> tagsNames) {

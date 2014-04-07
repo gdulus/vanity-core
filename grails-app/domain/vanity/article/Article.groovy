@@ -87,7 +87,7 @@ class Article implements ReviewNecessityAware {
     }
 
     Set<String> flatTagSet() {
-        return (Set<String>) tags.sum { Tag tag -> tag.flatChildrenSet() }
+        return (Set<String>) tags.sum { it.flatChildrenSet() }
     }
 }
 

@@ -13,7 +13,9 @@ class ArticleService {
     }
 
     @Transactional
-    Article create(final Set<String> stringTags, final ContentSource.Target contentSourceTarget, final Closure baseFieldsInitializer) {
+    Article create(
+        final Set<String> stringTags,
+        final ContentSource.Target contentSourceTarget, final Closure baseFieldsInitializer) {
         // validate input
         Validate.notNull(baseFieldsInitializer, 'Provide initializer object to setup base fields')
         Validate.isTrue(stringTags && !stringTags.isEmpty(), 'Provide not null and not empty tags')
@@ -53,15 +55,15 @@ class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public List<Article> findAllByHashCodes(final List<String> hashCodes) {
+    public List<Article> findAllByIds(final List<Long> ids) {
         return Article.executeQuery('''
             from
                 Article
             where
-                hash in :hashCodes
+                id in :ids
             ''',
             [
-                hashCodes: hashCodes
+                ids: ids
             ]
         )
     }
@@ -72,7 +74,8 @@ class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public List<Article> findAllFromThePointOfTimeWithStatus(final Date point, final List<ArticleStatus> articleStatuses) {
+    public List<Article> findAllFromThePointOfTimeWithStatus(
+        final Date point, final List<ArticleStatus> articleStatuses) {
         return Article.findAll { (dateCreated >= point || lastUpdated >= point) && status in articleStatuses }
     }
 
