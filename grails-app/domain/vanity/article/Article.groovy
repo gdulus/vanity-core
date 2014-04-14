@@ -38,7 +38,8 @@ class Article implements ReviewNecessityAware {
     static transients = [
         'shouldBeReviewed',
         'shortBody',
-        'flatTagSet'
+        'flatTagSet',
+        'publicTags'
     ]
 
     static constraints = {
@@ -55,7 +56,12 @@ class Article implements ReviewNecessityAware {
 
     static mapping = {
         version false
+        tags(lazy: false)
         body(type: 'text')
+    }
+
+    public List<Tag> getPublicTags() {
+        tags.findAll { it.open }
     }
 
     String getShortBody() {

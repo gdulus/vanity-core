@@ -26,7 +26,8 @@ class Tag implements ReviewNecessityAware {
 
     static transients = [
         'shouldBeReviewed',
-        'isPromoted',
+        'promoted',
+        'open',
         'hasChildren',
         'flatChildrenSet'
     ]
@@ -55,6 +56,10 @@ class Tag implements ReviewNecessityAware {
 
     boolean isPromoted() {
         return status == TagStatus.PROMOTED
+    }
+
+    boolean isOpen() {
+        return status in TagStatus.OPEN_STATUSES
     }
 
     def beforeValidate() {
