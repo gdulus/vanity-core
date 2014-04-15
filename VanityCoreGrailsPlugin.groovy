@@ -1,3 +1,5 @@
+import vanity.utils.BootstrapUtils
+
 class VanityCoreGrailsPlugin {
 
     def version = "0.1"
@@ -18,6 +20,7 @@ class VanityCoreGrailsPlugin {
     }
 
     def doWithSpring = {
+        bootstrapUtils(BootstrapUtils)
     }
 
     def doWithDynamicMethods = { ctx ->
