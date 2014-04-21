@@ -6,6 +6,8 @@ class ContentSource {
 
     Integer priority = 0
 
+    Boolean disabled = false
+
     static constraints = {
         target(nullable:false, unique: true)
         priority(nullable:false)
