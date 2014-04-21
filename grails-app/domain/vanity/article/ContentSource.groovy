@@ -22,7 +22,8 @@ class ContentSource {
 
         PUDELEK('http://www.pudelek.pl/'),
         FAKT('http://www.fakt.pl/'),
-        PLOTEK('http://www.plotek.pl/')
+        PLOTEK('http://www.plotek.pl/'),
+        KOZACZEK('http://www.kozaczek.pl/')
 
         final String address
 
