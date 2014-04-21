@@ -21,7 +21,8 @@ class ContentSource {
     public static enum Target {
 
         PUDELEK('http://www.pudelek.pl/'),
-        FAKT('http://www.fakt.pl/')
+        FAKT('http://www.fakt.pl/'),
+        PLOTEK('http://www.plotek.pl/')
 
         final String address
 
