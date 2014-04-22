@@ -7,12 +7,9 @@ import vanity.user.Role
 import vanity.user.User
 import vanity.user.UserRole
 
-import javax.annotation.Resource
-
 @Slf4j
 class BootstrapUtils {
 
-    @Resource
     def springSecurityService
 
     public void init() {
