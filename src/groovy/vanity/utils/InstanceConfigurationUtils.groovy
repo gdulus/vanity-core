@@ -4,7 +4,7 @@ final class InstanceConfigurationUtils {
 
     public static final String EXTERNAL_CONFIG_LOCATION = 'config.external.location'
 
-    public static String getProperty(final String propertyName, final Boolean failOnNotExists = false) {
+    public static String getValue(final String propertyName, final Boolean failOnNotExists = false) {
         String value = System.getProperty(propertyName)
 
         if (failOnNotExists && !value) {
