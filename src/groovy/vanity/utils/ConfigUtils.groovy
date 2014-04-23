@@ -5,12 +5,9 @@ import groovy.util.logging.Slf4j
 
 final class ConfigUtils {
 
-    public static List<String> externalConfig(final def grails, final File userHome, final Closure worker) {
-        return externalConfig(grails, userHome.path, worker)
-    }
-
-    public static List<String> externalConfig(final def grails, final String userHome, final Closure worker) {
-        Collector collector = new Collector(userHome)
+    public static List<String> externalConfig(final def grails, final Closure worker) {
+        String externalConfigPath = InstanceConfigurationUtils.getProperty(InstanceConfigurationUtils.EXTERNAL_CONFIG_LOCATION, true)
+        Collector collector = new Collector(externalConfigPath)
         collector.with worker
         grails.config.locations = collector.files
     }
