@@ -1,6 +1,5 @@
 package vanity.utils
 
-import grails.util.Environment
 import groovy.util.logging.Slf4j
 
 final class ConfigUtils {
@@ -19,8 +18,6 @@ final class ConfigUtils {
     @Slf4j
     private static class Collector {
 
-        private static final String RELATIVE_PATH = '.vanity'
-
         final List<String> files = []
 
         final String userHome
@@ -30,7 +27,7 @@ final class ConfigUtils {
         }
 
         public void file(final String fileName) {
-            String configFilePath = "${userHome}/${RELATIVE_PATH}/${Environment.current}/${fileName}.groovy"
+            String configFilePath = "${userHome}/${fileName}.groovy"
             // validate existence of config file
             if (!(new File(configFilePath).exists())) {
                 throw new IllegalArgumentException("Cant find config file: ${configFilePath}")
