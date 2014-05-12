@@ -1,6 +1,7 @@
 package vanity.article
 
 import groovy.transform.ToString
+import org.apache.commons.lang.WordUtils
 import vanity.utils.DomainUtils
 
 @ToString(includes = ['id', 'name'])
@@ -63,19 +64,17 @@ class Tag implements ReviewNecessityAware {
     }
 
     def beforeValidate() {
+        cleanUpName()
         setUpHash()
         setUpNormalizedName()
     }
 
-    def beforeInsert() {
-        setUpHash()
-        setUpNormalizedName()
+    private void cleanUpName() {
+        name = WordUtils.capitalizeFully(name)
     }
 
     private void setUpNormalizedName() {
-        if (name && !normalizedName) {
-            normalizedName = name.encodeAsPrettyUrl()
-        }
+        normalizedName = name.encodeAsPrettyUrl()
     }
 
     private void setUpHash() {
