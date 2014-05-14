@@ -24,7 +24,7 @@ class PrettyUrlCodec {
         ',': '',
         '\\.': '',
         ':': '',
-        ' ': '_'
+        ' ': '-'
     ]
 
     static encode = { String str ->
