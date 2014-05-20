@@ -4,12 +4,8 @@ import groovy.util.logging.Slf4j
 import org.apache.commons.lang.Validate
 import org.springframework.transaction.annotation.Transactional
 
-import javax.sql.DataSource
-
 @Slf4j
 class TagService {
-
-    DataSource dataSource
 
     @Transactional(readOnly = true)
     public Tag read(final Long id) {
@@ -55,6 +51,26 @@ class TagService {
         // execute update
         tag.status = status
         return tag.save()
+    }
+
+    @Transactional(readOnly = true)
+    public List<Tag> findAllActiveByQuery(final String query, final Boolean root) {
+        return Tag.executeQuery("""
+                select
+                    id
+                from
+                    Tag t
+                where
+                    lower(name) like :query
+                    and status in (:openStatuses)
+                    and root = :root
+                """,
+            [
+                query: "${query?.toLowerCase()}%",
+                openStatuses: TagStatus.OPEN_STATUSES,
+                root: root
+            ]
+        ).collect { Long it -> Tag.read(it) }
     }
 
     @Transactional(readOnly = true)
