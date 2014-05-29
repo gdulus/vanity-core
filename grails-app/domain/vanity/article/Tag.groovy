@@ -17,6 +17,8 @@ class Tag implements ReviewNecessityAware {
 
     Boolean root = false
 
+    Set<Tag> childTags
+
     Date dateCreated
 
     Date lastUpdated
@@ -78,9 +80,7 @@ class Tag implements ReviewNecessityAware {
     }
 
     private void setUpHash() {
-        if (name && !hash) {
-            hash = DomainUtils.generateHash(this.class, name)
-        }
+        hash = DomainUtils.generateHash(this.class, name)
     }
 
     public boolean hasChildren() {
@@ -88,13 +88,13 @@ class Tag implements ReviewNecessityAware {
     }
 
     Set<String> flatChildrenSet() {
-        return collectFlatChildrenSet(childTags as Set, [name] as Set<String>)
+        return collectFlatChildrenSet(childTags, [name] as Set<String>)
     }
 
     private Set<String> collectFlatChildrenSet(final Set<Tag> tags, final Set<String> tagsNames) {
         tags.each { final Tag tag ->
             if (tag.hasChildren()) {
-                collectFlatChildrenSet(tag.childTags as Set, tagsNames)
+                collectFlatChildrenSet(tag.childTags, tagsNames)
             }
 
             tagsNames << tag.name

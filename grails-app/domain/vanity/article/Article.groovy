@@ -25,7 +25,7 @@ class Article implements ReviewNecessityAware {
 
     Date publicationDate
 
-    List<Tag> tags
+    Set<Tag> tags
 
     Date dateCreated
 

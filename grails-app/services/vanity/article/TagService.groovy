@@ -66,7 +66,7 @@ class TagService {
                     and root = :root
                 """,
             [
-                query: "${query?.toLowerCase()}%",
+                query: "%${query?.toLowerCase()}%",
                 openStatuses: TagStatus.OPEN_STATUSES,
                 root: root
             ]
@@ -79,7 +79,7 @@ class TagService {
     }
 
     @Transactional(readOnly = true)
-    public List<Tag> findAllByParentTags(final Long id) {
+    public List<Tag> findAllParents(final Long id) {
         return Tag.executeQuery("""
                 from
                     Tag t
