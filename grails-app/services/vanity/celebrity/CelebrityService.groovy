@@ -13,7 +13,7 @@ class CelebrityService implements PaginationAware<Celebrity> {
     }
 
     @Transactional(readOnly = true)
-    PaginationBean<Celebrity> listWithPagination(Long max, Long offset, String sort) {
+    PaginationBean<Celebrity> listWithPagination(Long max, Long offset, String sort, final String query) {
         return new PaginationBean<Celebrity>(Celebrity.list(max: max, offset: offset, sort: sort), Celebrity.count())
     }
 
