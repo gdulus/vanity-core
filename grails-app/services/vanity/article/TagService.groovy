@@ -98,24 +98,6 @@ class TagService {
     }
 
     @Transactional(readOnly = true)
-    public List<Long> findAllValidRootTagsIds() {
-        return Tag.executeQuery("""
-                select
-                    id
-                from
-                    Tag t
-                where
-                    status in (:openStatuses)
-                    and root = true
-
-            """,
-            [
-                openStatuses: TagStatus.OPEN_STATUSES
-            ]
-        ) as List<Long>
-    }
-
-    @Transactional(readOnly = true)
     public List<Tag> findAll() {
         return Tag.list(sort: 'name')
     }
@@ -130,7 +112,24 @@ class TagService {
     }
 
     @Transactional(readOnly = true)
-    public List<Long> findAllValidRootTagsIds(final Date point) {
+    public List<Long> findAllValidTagsIds() {
+        return Tag.executeQuery("""
+                    select
+                        id
+                    from
+                        Tag t
+                    where
+                        status in (:openStatuses)
+
+                """,
+            [
+                openStatuses: TagStatus.OPEN_STATUSES
+            ]
+        ) as List<Long>
+    }
+
+    @Transactional(readOnly = true)
+    public List<Long> findAllValidTagsIds(final Date point) {
         return Tag.executeQuery("""
                     select
                         id
@@ -138,7 +137,6 @@ class TagService {
                         Tag t
                     where
                         (dateCreated >= :point or lastUpdated >= :point)
-                        and root = true
                         and status in (:statuses)
 
                 """,
@@ -147,11 +145,6 @@ class TagService {
                 statuses: TagStatus.OPEN_STATUSES
             ]
         ) as List<Long>
-    }
-
-    @Transactional(readOnly = true)
-    public List<Tag> findAllValidRootTags(final Date point) {
-        return Tag.findAll { (dateCreated >= point || lastUpdated > point) && status in tagStatuses && root }
     }
 
 }
