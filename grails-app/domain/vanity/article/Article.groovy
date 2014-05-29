@@ -39,7 +39,8 @@ class Article implements ReviewNecessityAware {
         'shouldBeReviewed',
         'shortBody',
         'flatTagSet',
-        'publicTags'
+        'publicTags',
+        'searchable'
     ]
 
     static constraints = {
@@ -84,6 +85,10 @@ class Article implements ReviewNecessityAware {
 
     def beforeInsert() {
         setUpHash()
+    }
+
+    public boolean searchable() {
+        status == ArticleStatus.ACTIVE
     }
 
     private void setUpHash() {
