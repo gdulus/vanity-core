@@ -30,9 +30,9 @@ class Tag implements ReviewNecessityAware {
     static transients = [
         'shouldBeReviewed',
         'promoted',
-        'open',
         'hasChildren',
-        'flatChildrenSet'
+        'flatChildrenSet',
+        'searchable'
     ]
 
     static constraints = {
@@ -61,10 +61,6 @@ class Tag implements ReviewNecessityAware {
         return status == TagStatus.PROMOTED
     }
 
-    boolean isOpen() {
-        return status in TagStatus.OPEN_STATUSES
-    }
-
     def beforeValidate() {
         cleanUpName()
         setUpHash()
@@ -85,6 +81,10 @@ class Tag implements ReviewNecessityAware {
 
     public boolean hasChildren() {
         childTags && childTags.size() > 0
+    }
+
+    public boolean searchable() {
+        root && status in TagStatus.OPEN_STATUSES
     }
 
     Set<String> flatChildrenSet() {

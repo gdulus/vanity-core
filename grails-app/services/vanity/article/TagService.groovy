@@ -111,42 +111,6 @@ class TagService {
         return Tag.findAllByStatus(status, [sort: 'name'])
     }
 
-    @Transactional(readOnly = true)
-    public List<Long> findAllValidTagsIds() {
-        return Tag.executeQuery("""
-                    select
-                        id
-                    from
-                        Tag t
-                    where
-                        status in (:openStatuses)
-
-                """,
-            [
-                openStatuses: TagStatus.OPEN_STATUSES
-            ]
-        ) as List<Long>
-    }
-
-    @Transactional(readOnly = true)
-    public List<Long> findAllValidTagsIds(final Date point) {
-        return Tag.executeQuery("""
-                    select
-                        id
-                    from
-                        Tag t
-                    where
-                        (dateCreated >= :point or lastUpdated >= :point)
-                        and status in (:statuses)
-
-                """,
-            [
-                point: point,
-                statuses: TagStatus.OPEN_STATUSES
-            ]
-        ) as List<Long>
-    }
-
 }
 
 

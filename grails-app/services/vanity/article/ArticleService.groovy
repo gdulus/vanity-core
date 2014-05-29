@@ -74,24 +74,6 @@ class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public List<Long> findAllIdsFromThePointOfTimeWithStatus(final Date point, final List<ArticleStatus> articleStatuses) {
-        return Article.executeQuery('''
-            select
-                id
-            from
-                Article
-            where
-                (dateCreated >= :point or lastUpdated >= :point)
-                and status in :statuses
-            ''',
-            [
-                point: point,
-                statuses: articleStatuses
-            ]
-        ) as List<Long>
-    }
-
-    @Transactional(readOnly = true)
     public List<Article> findAll() {
         return Article.findAllWhere(status: ArticleStatus.ACTIVE)
     }
