@@ -60,7 +60,7 @@ class Article implements ReviewNecessityAware {
         body(type: 'text')
     }
 
-    public List<Tag> getPublicTags() {
+    public Set<Tag> getPublicTags() {
         tags.findAll { it.open }
     }
 
