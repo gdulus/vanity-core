@@ -61,7 +61,7 @@ class Article implements ReviewNecessityAware {
     }
 
     public Set<Tag> getPublicTags() {
-        tags.findAll { it.open }.sort { it.name }
+        tags.findAll { it.open && it.root }.sort { it.name }
     }
 
     String getShortBody() {
