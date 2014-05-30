@@ -61,8 +61,8 @@ class Article implements ReviewNecessityAware {
         body(type: 'text')
     }
 
-    public Set<Tag> getPublicTags() {
-        tags.findAll { it.searchable() }.sort { it.name }
+    public List<Tag> getPublicTags() {
+        (tags.findAll { it.searchable() } as List).sort { it.name }
     }
 
     String getShortBody() {
