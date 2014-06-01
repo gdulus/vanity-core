@@ -103,4 +103,5 @@ class ArticleService {
     public Integer count() {
         return Article.count()
     }
+
 }

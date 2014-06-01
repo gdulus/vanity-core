@@ -87,20 +87,20 @@ class Tag implements ReviewNecessityAware {
         root && status in TagStatus.OPEN_STATUSES
     }
 
-    Set<String> flatChildrenSet() {
-        return collectFlatChildrenSet(childTags, [name] as Set<String>)
+    Set<Tag> flatChildrenSet() {
+        return collectFlatChildrenSet(childTags, [this] as Set<Tag>)
     }
 
-    private Set<String> collectFlatChildrenSet(final Set<Tag> tags, final Set<String> tagsNames) {
-        tags.each { final Tag tag ->
+    private Set<Tag> collectFlatChildrenSet(final Set<Tag> childTags, final Set<Tag> tags) {
+        childTags.each { final Tag tag ->
             if (tag.hasChildren()) {
-                collectFlatChildrenSet(tag.childTags, tagsNames)
+                collectFlatChildrenSet(tag.childTags, tags)
             }
 
-            tagsNames << tag.name
+            tags << tag
         }
 
-        return tagsNames
+        return childTags
     }
 
 }

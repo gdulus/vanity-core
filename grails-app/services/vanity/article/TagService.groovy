@@ -79,17 +79,57 @@ class TagService {
     }
 
     @Transactional(readOnly = true)
+    public Set<Tag> findAllInHierarchy(final Long id) {
+        Tag tag = Tag.read(id)
+        List<Tag> roots = tag.root ? [tag] : findAllParents(id)
+        return roots.sum { Tag it -> it.flatChildrenSet() } as Set
+    }
+
+    @Transactional(readOnly = true)
     public List<Tag> findAllParents(final Long id) {
+        findAllParents(Tag.load(id))
+    }
+
+    @Transactional(readOnly = true)
+    public List<Tag> findAllParents(final Tag tag) {
         return Tag.executeQuery("""
                 from
                     Tag t
                 where
-                    :tag in elements(t.childTags)
+                    t.status in :statuses
+                    and :tag in elements(t.childTags)
             """,
             [
-                tag: Tag.load(id)
+                status: TagStatus.OPEN_STATUSES,
+                tag: tag
             ]
         )
+    }
+
+    @Transactional(readOnly = true)
+    public List<Tag> findAllRootParents(final Long id) {
+        Tag tag = Tag.get(id)
+
+        if (tag.root) {
+            return [tag]
+        }
+
+        List<Tag> roots = []
+        List<Tag> parents = findAllParents(tag)
+
+        while (parents.size() > 0) {
+            Tag parent = parents.pop()
+
+            if (parent.root) {
+                roots << parent
+                break
+            }
+
+            List<Tag> parentParents = findAllParents(parent)
+            parents += parentParents
+        }
+
+        return roots.unique()
     }
 
     @Transactional(readOnly = true)

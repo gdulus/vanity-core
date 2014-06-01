@@ -1,11 +1,11 @@
 package vanity.stats
 
 import org.springframework.transaction.annotation.Transactional
-import vanity.article.Article
-import vanity.article.Tag
-import vanity.article.TagStatus
+import vanity.article.*
 
 class PopularityService {
+
+    TagService tagService
 
     @Transactional
     public void update(final Article article, final Date day, final Integer rankDelta) {
@@ -30,56 +30,85 @@ class PopularityService {
     }
 
     @Transactional(readOnly = true)
-    public List<PopularityDTO> getTopArticlesFromDate(final Date fromDate, final Integer max) {
+    public List<Article> findTopArticlesByTag(final Tag tag, final Integer max, final Integer maxDays) {
+        return (List<Article>) ArticlePopularity.executeQuery('''
+                select
+                    article
+                from
+                    ArticlePopularity pop
+                    join pop.article article
+                where
+                    pop.day >= :startDay
+                    and article.status = :status
+                    and :tag in elements(article.tags)
+                group by
+                    article
+                order by
+                    max(pop.rank) desc
+                ''',
+            [
+                startDay: (new Date() - maxDays).clearTime(),
+                status: ArticleStatus.ACTIVE,
+                tag: tag,
+                max: max
+            ]
+        )
+    }
+
+    @Transactional(readOnly = true)
+    public List<Article> getTopArticlesFromDate(final Date fromDate, final Integer max, final Integer offset = 0) {
         if (!fromDate || !max) {
             return Collections.emptyList()
         }
 
-        List<Object[]> result = (List<Object[]>) ArticlePopularity.executeQuery('''
-            select
-                article.id, max(pop.rank)
-            from
-                ArticlePopularity pop
-                join pop.article article
-            where
-                pop.day >= :fromDate
-            group by
-                article.id
-            order by
-                max(pop.rank) desc
-            ''',
+        List<Long> result = (List<Long>) ArticlePopularity.executeQuery('''
+                select
+                   article.id
+                from
+                    ArticlePopularity pop
+                    join pop.article article
+                where
+                    pop.day >= :fromDate
+                    and article.status = :articleStatus
+                group by
+                    article.id
+                order by
+                    article.publicationDate desc,
+                    max(pop.rank) desc
+                ''',
             [
-                fromDate: fromDate.clearTime()
+                fromDate: fromDate.clearTime(),
+                articleStatus: ArticleStatus.ACTIVE
             ],
-            [
-                max: max,
-            ])
-
-        return result.collect { PopularityDTO.valueOf(it) }
-    }
-
-    @Transactional(readOnly = true)
-    public List<Article> getTopArticles(final Integer max, final Integer offset) {
-        return (List<Article>) ArticlePopularity.executeQuery('''
-            select
-                article
-            from
-                ArticlePopularity pop
-                join pop.article article
-            group by
-                article
-            order by
-                max(pop.rank) desc
-            ''',
             [
                 max: max,
                 offset: offset
             ])
+
+        return result.collect { Article.read(it) }
     }
 
     @Transactional(readOnly = true)
-    public Integer countTopArticles() {
-        return ArticlePopularity.count()
+    public Integer countTopArticlesFromDate(final Date fromDate) {
+        if (!fromDate) {
+            return 0
+        }
+
+        return ArticlePopularity.executeQuery('''
+                select
+                    count(distinct article.id)
+                from
+                    ArticlePopularity pop
+                    join pop.article article
+                where
+                    pop.day >= :fromDate
+                    and article.status = :articleStatus
+                ''',
+            [
+                fromDate: fromDate.clearTime(),
+                articleStatus: ArticleStatus.ACTIVE
+            ]
+        )[0]
     }
 
     @Transactional(readOnly = true)
@@ -138,5 +167,20 @@ class PopularityService {
             ])
 
         return result.collect { PopularityDTO.valueOf(it) }
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Tag, List<Article>> findOtherPopular(final Article article, final Integer max, final Integer maxDays) {
+        Map<Tag, List<Article>> results = [:]
+        List<Tag> rootTags = article.getPublicTags().sum { Tag it -> tagService.findAllRootParents(it.id) }
+        for (final Tag rootTag : rootTags) {
+            List<Article> articles = findTopArticlesByTag(rootTag, max, maxDays)
+            articles.removeAll { it.id == article.id }
+            if (articles) {
+                results[rootTag] = articles
+            }
+        }
+
+        return results
     }
 }

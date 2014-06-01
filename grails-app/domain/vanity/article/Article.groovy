@@ -7,7 +7,7 @@ import vanity.utils.DomainUtils
 @ToString(includes = ['hash', 'title'])
 class Article implements ReviewNecessityAware {
 
-    private static final PREVIEW_MAX_LENGTH = 500
+    private static final int PREVIEW_MAX_LENGTH = 500
 
     String externalId
 
@@ -65,8 +65,8 @@ class Article implements ReviewNecessityAware {
         (tags.findAll { it.searchable() } as List).sort { it.name }
     }
 
-    String getShortBody() {
-        return StringUtils.abbreviate(body, PREVIEW_MAX_LENGTH)
+    String getShortBody(final int max = PREVIEW_MAX_LENGTH) {
+        return StringUtils.abbreviate(body, max)
     }
 
     @Override
@@ -95,10 +95,6 @@ class Article implements ReviewNecessityAware {
         if (url && !hash) {
             hash = DomainUtils.generateHash(this.class, url)
         }
-    }
-
-    Set<String> flatTagSet() {
-        return (Set<String>) tags.sum { it.flatChildrenSet() }
     }
 }
 
