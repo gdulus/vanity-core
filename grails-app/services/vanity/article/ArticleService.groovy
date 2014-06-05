@@ -36,6 +36,23 @@ class ArticleService {
         return article
     }
 
+    @Transactional
+    public void updateLastUpdatedForAllByTag(final Tag tag) {
+        Article.executeUpdate('''
+            update
+                Article a
+            set
+                a.lastUpdated = :date
+            where
+                :tag in elements(a.tags)
+            ''',
+            [
+                date: new Date(),
+                tag: tag
+            ]
+        )
+    }
+
     @Transactional(readOnly = true)
     public List<Article> findAllByTag(final Tag tag) {
         return Article.executeQuery('''

@@ -38,6 +38,12 @@ class TagService {
     }
 
     @Transactional
+    public boolean setStatus(final Tag tag, final TagStatus status) {
+        tag.status = status
+        tag.save() != null
+    }
+
+    @Transactional
     public boolean updateTagStatus(final Long id, final TagStatus status) {
         // validate input
         Validate.notEmpty(id, 'Provide not null tag id')
@@ -79,13 +85,6 @@ class TagService {
     }
 
     @Transactional(readOnly = true)
-    public Set<Tag> findAllInHierarchy(final Long id) {
-        Tag tag = Tag.read(id)
-        List<Tag> roots = tag.root ? [tag] : findAllParents(id)
-        return roots.sum { Tag it -> it.flatChildrenSet() } as Set
-    }
-
-    @Transactional(readOnly = true)
     public List<Tag> findAllParents(final Long id) {
         findAllParents(Tag.load(id))
     }
@@ -100,7 +99,7 @@ class TagService {
                     and :tag in elements(t.childTags)
             """,
             [
-                status: TagStatus.OPEN_STATUSES,
+                statuses: TagStatus.OPEN_STATUSES,
                 tag: tag
             ]
         )

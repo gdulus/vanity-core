@@ -32,7 +32,8 @@ class Tag implements ReviewNecessityAware {
         'promoted',
         'hasChildren',
         'flatChildrenSet',
-        'searchable'
+        'searchable',
+        'isSpam'
     ]
 
     static constraints = {
@@ -79,6 +80,10 @@ class Tag implements ReviewNecessityAware {
         hash = DomainUtils.generateHash(this.class, name)
     }
 
+    public boolean isSpam() {
+        status == TagStatus.SPAM
+    }
+
     public boolean hasChildren() {
         childTags && childTags.size() > 0
     }
@@ -100,7 +105,7 @@ class Tag implements ReviewNecessityAware {
             tags << tag
         }
 
-        return childTags
+        return tags
     }
 
 }
