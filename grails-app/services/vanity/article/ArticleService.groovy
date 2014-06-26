@@ -73,16 +73,7 @@ class ArticleService {
 
     @Transactional(readOnly = true)
     public List<Article> findAllByIds(final List<Long> ids) {
-        return Article.executeQuery('''
-            from
-                Article
-            where
-                id in :ids
-            ''',
-            [
-                ids: ids
-            ]
-        )
+        return ids.collect { read(it) }
     }
 
     @Transactional(readOnly = true)
