@@ -150,6 +150,11 @@ class TagService {
         return Tag.findAllByStatus(status, [sort: 'name'])
     }
 
+    @Transactional(readOnly = true)
+    public List<Tag> findAllRootParentsByArticle(final Article article) {
+        return article.getPublicTags().sum { Tag it -> findAllRootParents(it.id) }
+    }
+
 }
 
 

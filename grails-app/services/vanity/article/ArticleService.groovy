@@ -72,6 +72,29 @@ class ArticleService {
     }
 
     @Transactional(readOnly = true)
+    public List<Article> findAllNewsetByTag(final Tag tag, final int max) {
+        return Article.executeQuery('''
+            select
+                distinct a
+            from
+                Article a
+            inner join
+                a.tags t
+            where
+                t = :tag
+            order by
+                a.publicationDate desc
+            ''',
+            [
+                tag: tag
+            ],
+            [
+                max: max
+            ]
+        )
+    }
+
+    @Transactional(readOnly = true)
     public List<Article> findAllByIds(final List<Long> ids) {
         return ids.collect { read(it) }
     }
