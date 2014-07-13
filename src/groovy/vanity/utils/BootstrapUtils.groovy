@@ -30,14 +30,14 @@ class BootstrapUtils {
     }
 
     private void initUsers() {
-        initUser('admin', Role.findByAuthority(Authority.ROLE_ADMIN))
-        initUser('reviewer', Role.findByAuthority(Authority.ROLE_REVIEWER))
+        initUser('admin', ',t~mRK8y:p', Role.findByAuthority(Authority.ROLE_ADMIN))
+        initUser('reviewer','%!=B^E_7;v', Role.findByAuthority(Authority.ROLE_REVIEWER))
     }
 
-    private void initUser(final String username, final Role role) {
+    private void initUser(final String username, final String password, final Role role) {
         if (!User.findByUsername(username)) {
             log.info('Creating User {}', username)
-            User user = new User(username: username, password: springSecurityService.encodePassword(username)).save(flush: true)
+            User user = new User(username: username, password: springSecurityService.encodePassword(password)).save(flush: true)
             UserRole.create(user, role, true)
 
         }
