@@ -72,7 +72,7 @@ class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public List<Article> findAllNewsetByTag(final Tag tag, final int max) {
+    public List<Article> findAllNewsetByTagAndDate(final Tag tag, final Date publicationDate, final int max) {
         return Article.executeQuery('''
             select
                 distinct a
@@ -82,11 +82,13 @@ class ArticleService {
                 a.tags t
             where
                 t = :tag
+                and a.publicationDate <= :publicationDate
             order by
                 a.publicationDate desc
             ''',
             [
-                tag: tag
+                tag: tag,
+                publicationDate: publicationDate
             ],
             [
                 max: max
