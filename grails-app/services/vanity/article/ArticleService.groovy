@@ -128,8 +128,8 @@ class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Article findByExternalId(final String externalId) {
-        return Article.findByExternalId(externalId)
+    public Article findByExternalIdAndContentSource(final String externalId, final ContentSource.Target contentSourceTarget) {
+        return Article.findByExternalIdAndSource(externalId, ContentSource.findByTarget(contentSourceTarget))
     }
 
     @Transactional(readOnly = true)
