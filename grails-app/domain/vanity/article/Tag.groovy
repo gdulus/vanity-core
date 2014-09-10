@@ -33,7 +33,8 @@ class Tag implements ReviewNecessityAware {
         'hasChildren',
         'flatChildrenSet',
         'searchable',
-        'isSpam'
+        'isSpam',
+        'indexable'
     ]
 
     static constraints = {
@@ -90,6 +91,10 @@ class Tag implements ReviewNecessityAware {
 
     public boolean searchable() {
         root && status in TagStatus.OPEN_STATUSES
+    }
+
+    public boolean indexable() {
+        status in TagStatus.OPEN_STATUSES
     }
 
     Set<Tag> flatChildrenSet() {
