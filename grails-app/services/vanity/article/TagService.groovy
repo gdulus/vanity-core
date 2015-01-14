@@ -80,7 +80,7 @@ class TagService {
     }
 
     @Transactional(readOnly = true)
-    public Tag findByTagName(final String tagName) {
+    public Tag findByNormalizedName(final String tagName) {
         return Tag.findByNormalizedName(tagName)
     }
 
@@ -107,7 +107,15 @@ class TagService {
 
     @Transactional(readOnly = true)
     public List<Tag> findAllRootParents(final Long id) {
-        Tag tag = Tag.get(id)
+        Tag tag = Tag.read(id)
+        return findAllRootParents(tag)
+    }
+
+    @Transactional(readOnly = true)
+    public List<Tag> findAllRootParents(final Tag tag) {
+        if (!tag){
+            return Collections.emptyList()
+        }
 
         if (tag.root) {
             return [tag]
