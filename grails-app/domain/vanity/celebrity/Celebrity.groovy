@@ -4,6 +4,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import vanity.article.Tag
 import vanity.image.gorm.Image
 import vanity.image.gorm.ImageContainer
+import vanity.location.Country
 
 class Celebrity implements ImageContainer {
 
@@ -15,33 +16,74 @@ class Celebrity implements ImageContainer {
 
     Image avatar
 
+    Gender gender
+
+    Integer height
+
+    Boolean alive = true
+
+    TimePlace birth
+
+    TimePlace death
+
+    SortedSet<Job> jobs
+
+    SortedSet<Quotation> quotations
+
+    SortedSet<Country> countries
+
+    Date dateCreated
+
+    Date lastUpdated
+
     static belongsTo = [
         tag: Tag
+    ]
+
+    static hasMany = [
+        jobs: Job,
+        quotations: Quotation,
+        countries: Country
     ]
 
     static constraints = {
         firstName(nullable: true, blank: true)
         lastName(nullable: true, blank: true)
         description(nullable: true, blank: true)
-        tag(nullable: false, unique: true, validator: {
-            return it?.root
-        })
         avatar(nullable: true)
+        height(nullable: true)
+        birth(nullable: false)
+        death(nullable: true)
+        tag(nullable: false, unique: true, validator: { return it?.root })
+        jobs(maxSize: 5)
     }
 
     static mapping = {
         description(type: 'text')
+        quotations(sort: 'dateCreated', order: 'asc')
     }
 
     static embedded = [
-        'avatar'
+        'avatar',
+        'birth',
+        'death'
     ]
 
     static transients = [
         'getImagePath',
         'hasImage',
-        'getFullName'
+        'fullName',
+        'age',
+        'zodiacSign'
     ]
+
+    public Date getAge() {
+        throw new IllegalArgumentException('Not implemented')
+    }
+
+    public ZodiacSign getZodiacSign() {
+        return ZodiacSign.findByDate(birth.date)
+    }
 
     @Override
     public String getImagePath(final GrailsApplication grailsApplication) {
