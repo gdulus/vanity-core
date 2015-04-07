@@ -8,12 +8,14 @@ import vanity.pagination.PaginationParams
 
 class CountryService implements PaginationAware<Job> {
 
-    @Transactional(readOnly = true)
     public Country read(final Long id) {
         return Country.read(id)
     }
 
-    @Transactional(readOnly = true)
+    List<Country> listAll() {
+        return Country.list([sort: 'name'])
+    }
+
     PaginationBean<Country> listWithPagination(final PaginationParams params) {
         return new PaginationBean<Country>(Country.list(max: params.max, offset: params.offset, sort: params.sort), Country.count())
     }

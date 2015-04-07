@@ -1,6 +1,6 @@
 package vanity.celebrity
 
-class Job {
+class Job implements Comparable<Job> {
 
     String name
 
@@ -12,4 +12,8 @@ class Job {
         name(nullable: false, blank: false, maxSize: 250, unique: true)
     }
 
+    @Override
+    int compareTo(Job o) {
+        return name.compareTo(o.name)
+    }
 }

@@ -5,6 +5,7 @@ import vanity.article.Tag
 import vanity.image.gorm.Image
 import vanity.image.gorm.ImageContainer
 import vanity.location.Country
+import vanity.user.Gender
 
 class Celebrity implements ImageContainer {
 

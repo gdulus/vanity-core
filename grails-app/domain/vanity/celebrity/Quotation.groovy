@@ -1,6 +1,6 @@
 package vanity.celebrity
 
-class Quotation {
+class Quotation implements Comparable<Quotation> {
 
     String content
 
@@ -23,4 +23,8 @@ class Quotation {
         content(type: 'text')
     }
 
+    @Override
+    int compareTo(Quotation o) {
+        return dateCreated.compareTo(o.dateCreated)
+    }
 }

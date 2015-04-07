@@ -7,12 +7,14 @@ import vanity.pagination.PaginationParams
 
 class CelebrityJobService implements PaginationAware<Job> {
 
-    @Transactional(readOnly = true)
     public Job read(final Long id) {
         return Job.read(id)
     }
 
-    @Transactional(readOnly = true)
+    List<Job> listAll() {
+        return Job.list([sort: 'name'])
+    }
+
     PaginationBean<Job> listWithPagination(final PaginationParams params) {
         return new PaginationBean<Job>(Job.list(max: params.max, offset: params.offset, sort: params.sort), Job.count())
     }
