@@ -25,6 +25,18 @@ class Quotation implements Comparable<Quotation> {
 
     @Override
     int compareTo(Quotation o) {
+        if (!o.dateCreated && !dateCreated) {
+            return 0
+        }
+
+        if (!o.dateCreated && dateCreated) {
+            return 1
+        }
+
+        if (o.dateCreated && !dateCreated) {
+            return -1
+        }
+
         return dateCreated.compareTo(o.dateCreated)
     }
 }
