@@ -78,8 +78,11 @@ class Celebrity implements ImageContainer {
         'zodiacSign'
     ]
 
-    public Date getAge() {
-        throw new IllegalArgumentException('Not implemented')
+    public def getAge() {
+        use(groovy.time.TimeCategory) {
+            def duration = alive ? new Date() - birth.date : death.date - birth.date
+            return (int) (duration.days / 365)
+        }
     }
 
     public ZodiacSign getZodiacSign() {

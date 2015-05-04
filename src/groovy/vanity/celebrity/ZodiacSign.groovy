@@ -28,6 +28,11 @@ enum ZodiacSign {
     }
 
     public static ZodiacSign findByDate(final Date date) {
-        throw new IllegalArgumentException('Not implemented')
+        int month = date.month + 1
+        int dayOfTheMonth = date.date
+        values().find {
+            ((month == it.monthStart && dayOfTheMonth >= it.dayStart && dayOfTheMonth <= 31)
+                    || (month == it.monthEnd && dayOfTheMonth >= 1 && dayOfTheMonth <= it.dayEnd))
+        }
     }
 }
