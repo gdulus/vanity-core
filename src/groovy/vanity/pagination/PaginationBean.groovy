@@ -12,6 +12,6 @@ class PaginationBean<T> {
     }
 
     boolean isEmpty() {
-        return !elements
+        return elements.isEmpty()
     }
 }
