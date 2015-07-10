@@ -1,6 +1,8 @@
 package vanity.celebrity
 
-class Job implements Comparable<Job> {
+import vanity.i18n.TranslationKeyAware
+
+class Job implements Comparable<Job>, TranslationKeyAware {
 
     String name
 
@@ -15,5 +17,10 @@ class Job implements Comparable<Job> {
     @Override
     int compareTo(Job o) {
         return name.compareTo(o.name)
+    }
+
+    @Override
+    String getTranslationKey() {
+        return name.toLowerCase().replaceAll(' ', '_')
     }
 }

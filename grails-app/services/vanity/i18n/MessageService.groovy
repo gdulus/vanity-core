@@ -13,7 +13,23 @@ class MessageService implements PaginationAware<Message> {
 
     @Override
     PaginationBean<Message> listWithPagination(final PaginationParams params) {
-        new PaginationBean<Message>(Message.list(max: params.max, offset: params.offset, sort: params.sort), Message.count())
+        if (params.queryParams?.query) {
+            String likeStatement = "%${params.queryParams.query}%"
+            List<Message> result = Message.executeQuery(
+                    'from Message where code like :query or text like :query order by :sort',
+                    [
+                            query : likeStatement,
+                            max   : params.max,
+                            offset: params.offset ?: 0,
+                            sort  : params.sort
+                    ]
+            )
+            int count = Message.executeQuery('select count(*) from Message where code like :query or text like :query', [query: likeStatement])[0]
+            new PaginationBean<Message>(result, count)
+
+        } else {
+            new PaginationBean<Message>(Message.list(max: params.max, offset: params.offset, sort: params.sort), Message.count())
+        }
     }
 
     @Transactional
