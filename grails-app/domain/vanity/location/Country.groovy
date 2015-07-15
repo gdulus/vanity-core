@@ -1,10 +1,12 @@
 package vanity.location
 
-class Country implements Comparable<Country> {
+import vanity.i18n.TranslationKeyAware
 
-    String name
+class Country implements Comparable<Country>, TranslationKeyAware {
 
     String isoCode
+
+    String name
 
     Date dateCreated
 
@@ -17,6 +19,11 @@ class Country implements Comparable<Country> {
 
     @Override
     int compareTo(Country o) {
-        return name.compareTo(o.name)
+        return isoCode.compareTo(o.isoCode)
+    }
+
+    @Override
+    String getTranslationKey() {
+        return isoCode
     }
 }
