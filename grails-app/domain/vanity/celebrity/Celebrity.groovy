@@ -23,11 +23,15 @@ class Celebrity implements ImageContainer {
 
     Integer height
 
+    Date birthDate
+
+    String birthLocation
+
     Boolean dead = false
 
-    TimePlace birth
+    Date deathDate
 
-    TimePlace death
+    String deathLocation
 
     SortedSet<Job> jobs
 
@@ -56,8 +60,10 @@ class Celebrity implements ImageContainer {
         description(nullable: true, blank: true)
         avatar(nullable: true)
         height(nullable: true)
-        birth(nullable: false)
-        death(nullable: true)
+        birthDate(nullable: false)
+        birthLocation(nullable: true)
+        deathDate(nullable: true)
+        deathLocation(nullable: true)
         tag(nullable: false, unique: true, validator: { return it?.root })
         jobs(maxSize: 5)
     }
