@@ -1,6 +1,8 @@
 package vanity.celebrity
 
-enum ZodiacSign {
+import org.springframework.context.MessageSourceResolvable
+
+enum ZodiacSign implements MessageSourceResolvable {
 
     RAM(3, 21, 4, 19),
     BULL(4, 20, 5, 20),
@@ -34,5 +36,20 @@ enum ZodiacSign {
             ((month == it.monthStart && dayOfTheMonth >= it.dayStart && dayOfTheMonth <= 31)
                     || (month == it.monthEnd && dayOfTheMonth >= 1 && dayOfTheMonth <= it.dayEnd))
         }
+    }
+
+    @Override
+    String[] getCodes() {
+        ["${getClass().name}.${name()}"] as String[]
+    }
+
+    @Override
+    Object[] getArguments() {
+        return new Object[0]
+    }
+
+    @Override
+    String getDefaultMessage() {
+        return name()
     }
 }
