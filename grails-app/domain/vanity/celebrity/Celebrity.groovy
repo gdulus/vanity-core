@@ -13,6 +13,8 @@ class Celebrity implements ImageContainer {
 
     String lastName
 
+    String nickName
+
     String description
 
     Image avatar
@@ -21,7 +23,7 @@ class Celebrity implements ImageContainer {
 
     Integer height
 
-    Boolean alive = true
+    Boolean dead = false
 
     TimePlace birth
 
@@ -50,6 +52,7 @@ class Celebrity implements ImageContainer {
     static constraints = {
         firstName(nullable: true, blank: true)
         lastName(nullable: true, blank: true)
+        nickName(nullable: true, blank: true)
         description(nullable: true, blank: true)
         avatar(nullable: true)
         height(nullable: true)
@@ -80,7 +83,7 @@ class Celebrity implements ImageContainer {
 
     public def getAge() {
         use(groovy.time.TimeCategory) {
-            def duration = alive ? new Date() - birth.date : death.date - birth.date
+            def duration = dead ? death.date - birth.date : new Date() - birth.date
             return (int) (duration.days / 365)
         }
     }
