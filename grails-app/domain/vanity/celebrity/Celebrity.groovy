@@ -89,13 +89,13 @@ class Celebrity implements ImageContainer {
 
     public def getAge() {
         use(groovy.time.TimeCategory) {
-            def duration = dead ? death.date - birth.date : new Date() - birth.date
+            def duration = dead ? deathDate - birthDate : new Date() - birthDate
             return (int) (duration.days / 365)
         }
     }
 
     public ZodiacSign getZodiacSign() {
-        return ZodiacSign.findByDate(birth.date)
+        return ZodiacSign.findByDate(birthDate)
     }
 
     @Override
