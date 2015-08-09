@@ -60,7 +60,7 @@ class Celebrity implements ImageContainer {
         description(nullable: true, blank: true)
         avatar(nullable: true)
         height(nullable: true)
-        birthDate(nullable: false)
+        birthDate(nullable: true)
         birthLocation(nullable: true)
         deathDate(nullable: true)
         deathLocation(nullable: true)
