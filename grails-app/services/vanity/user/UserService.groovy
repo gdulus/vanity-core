@@ -11,9 +11,12 @@ class UserService {
         Profile profile = new Profile()
         profile.with profileBinder
         profile.save(failOnError: true)
+
         User user = new User(username: username, password: springSecurityService.encodePassword(password), profile: profile)
-        UserRole.create(user, Role.findByAuthority(Authority.ROLE_PORTAL_USER))
         user.save(failOnError: true)
+
+        UserRole.create(user, Role.findByAuthority(Authority.ROLE_PORTAL_USER))
+        return user
     }
 
     @Transactional
