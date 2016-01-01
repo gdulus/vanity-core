@@ -8,6 +8,10 @@ class Profile {
 
     Date dateOfBirth
 
+    Date dateCreated
+
+    Date lastUpdated
+
     static constraints = {
         gender nullable: true
         dateOfBirth nullable: true

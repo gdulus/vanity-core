@@ -8,6 +8,10 @@ class User {
 
     Profile profile
 
+    Date dateCreated
+
+    Date lastUpdated
+
     boolean enabled = true
 
     boolean accountExpired
