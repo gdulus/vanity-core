@@ -12,9 +12,15 @@ class Country implements Comparable<Country>, TranslationKeyAware {
 
     Date lastUpdated
 
+    static hasMany = [voivodeships: Voivodeship]
+
     static constraints = {
         name(nullable: false, blank: false, maxSize: 250)
         isoCode(nullable: false, blank: false, maxSize: 10, unique: true)
+    }
+
+    static mapping = {
+        version false
     }
 
     @Override
