@@ -23,4 +23,19 @@ class CelebrityService implements PaginationAware<Celebrity> {
         return Celebrity.findByTag(tag)
     }
 
+    @Transactional(readOnly = true)
+    List<Celebrity> findLastUpdated(final int max) {
+        return Celebrity.list(sort: 'lastUpdated', order: 'desc', max: max)
+    }
+
+    @Transactional(readOnly = true)
+    List<Celebrity> findByLastNameLike(final String query, final int max) {
+        return Celebrity.findAllByLastNameIlike("${query}%", [max: max, sort: 'firstName'])
+    }
+
+    @Transactional(readOnly = true)
+    Integer countByLastNameLike(final String query) {
+        return Celebrity.countByLastNameIlike("${query}%")
+    }
+
 }
