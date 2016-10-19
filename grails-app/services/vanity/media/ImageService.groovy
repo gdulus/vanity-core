@@ -23,19 +23,17 @@ class ImageService {
     @Value('${images.height.max}')
     private Integer imageMaxHeight
 
-    public void validateImage(final Integer width, final Integer height, final String contentType) {
-        if (width > imageMaxWidth || height > imageMaxWidth) {
-            throw new ImageSavingException(width, height, imageMaxWidth, imageMaxHeight)
-        }
-
-        if (!isSupportedContentType(contentType)) {
-            throw new ImageSavingException(contentType)
-        }
-    }
-
     public String store(final Celebrity celebrity, final MultipartFile file) {
+        if (!isSupportedContentType(file.contentType)) {
+            throw new ImageInvalidFormatException(file.contentType)
+        }
+
         BufferedImage image = ImageIO.read(file.getInputStream())
-        validateImage(image.getWidth(), image.getHeight(), file.contentType)
+
+        if (!isSupportedSize(image)) {
+            throw new ImageInvalidSizeException(image.width, image.height, imageMaxWidth, imageMaxHeight)
+        }
+
         String fileExtension = getFileExtension(file)
         String fileName = getCelebrityFileName(celebrity.id, fileExtension)
         String fullPath = "${celebrityImagesDir}/${fileName}"
@@ -58,6 +56,10 @@ class ImageService {
 
     private boolean isSupportedContentType(final String contentType) {
         return contentTypeMapping[contentType]
+    }
+
+    private boolean isSupportedSize(final BufferedImage image) {
+        image.width <= imageMaxWidth && image.height <= imageMaxWidth
     }
 
     private Map<String, String> getContentTypeMapping() {
