@@ -7,6 +7,7 @@ enum UserActivityType {
     UPDATE_ACCOUNT,
     LOG_IN,
     LOG_OUT,
-    EMAIL_CONFIRMED
+    EMAIL_CONFIRMED,
+    CELEBRITY_IMAGE_UPLOADED
 
 }
