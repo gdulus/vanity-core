@@ -9,23 +9,61 @@ import vanity.pagination.PaginationParams
 class CelebrityService implements PaginationAware<Celebrity> {
 
     @Transactional(readOnly = true)
+    public List<Celebrity> listAll() {
+        return Celebrity.list().sort { it.firstName }
+    }
+
+    @Transactional(readOnly = true)
     public Celebrity read(final Long id) {
         return Celebrity.read(id)
     }
 
     @Transactional(readOnly = true)
     PaginationBean<Celebrity> listWithPagination(final PaginationParams params) {
-        return new PaginationBean<Celebrity>(Celebrity.list(max: params.max, offset: params.offset, sort: params.sort), Celebrity.count())
+        if (!params.queryParams?.query) {
+            return new PaginationBean<Celebrity>(Celebrity.list(max: params.max, offset: params.offset, sort: params.sort), Celebrity.count())
+        }
+
+        String query = params.queryParams.query
+        String likeStatement = "%${query.toLowerCase()}%"
+
+        List<Celebrity> celebrities = Celebrity.executeQuery("""
+                from
+                    Celebrity
+                where
+                    lower(firstName) like :query
+                    or lower(lastName) like :query
+                order by
+                    :sort
+            """,
+                [
+                        query : likeStatement,
+                        max   : params.max,
+                        offset: params.offset ?: 0,
+                        sort  : params.sort
+                ]
+        )
+
+        int count = Celebrity.executeQuery("""
+                select
+                    count(*)
+                from
+                    Celebrity
+                where
+                   lower(firstName) like :query
+                   or lower(lastName) like :query
+            """,
+                [
+                        query: likeStatement,
+                ]
+        )[0]
+
+        return new PaginationBean<Celebrity>(celebrities, count)
     }
 
     @Transactional(readOnly = true)
     Celebrity findByTag(final Tag tag) {
         return Celebrity.findByTag(tag)
-    }
-
-    @Transactional(readOnly = true)
-    List<Celebrity> findLastUpdated(final int max) {
-        return Celebrity.list(sort: 'lastUpdated', order: 'desc', max: max)
     }
 
     @Transactional(readOnly = true)
@@ -36,6 +74,11 @@ class CelebrityService implements PaginationAware<Celebrity> {
     @Transactional(readOnly = true)
     Integer countByLastNameLike(final String query) {
         return Celebrity.countByLastNameIlike("${query}%")
+    }
+
+    @Transactional(readOnly = true)
+    List<Celebrity> findLastUpdated(final int max) {
+        return Celebrity.list(sort: 'lastUpdated', order: 'desc', max: max)
     }
 
 }
