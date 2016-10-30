@@ -1,8 +1,10 @@
 package vanity.media
 
+import org.apache.commons.lang.Validate
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.multipart.MultipartFile
 import vanity.celebrity.Celebrity
+import vanity.celebrity.CelebrityImage
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -17,11 +19,20 @@ class ImageService {
     @Value('${images.vip.subdir}')
     private String celebritySubDir
 
+    @Value('${images.server.url}')
+    private String imageUrl
+
     @Value('${images.width.max}')
     private Integer imageMaxWidth
 
     @Value('${images.height.max}')
     private Integer imageMaxHeight
+
+    public String getPath(final CelebrityImage image, final Integer size = null) {
+        Validate.isTrue(size == null || size > 0)
+        String resizePart = (size ? "r@${size}" : "")
+        return "${imageUrl}${resizePart}/${celebritySubDir}/${image.fileName}"
+    }
 
     public String store(final Celebrity celebrity, final MultipartFile file) {
         if (!isSupportedContentType(file.contentType)) {

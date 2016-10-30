@@ -1,13 +1,10 @@
 package vanity.celebrity
 
-import org.codehaus.groovy.grails.commons.GrailsApplication
 import vanity.article.Tag
-import vanity.image.gorm.Image
-import vanity.image.gorm.ImageContainer
 import vanity.location.Country
 import vanity.user.Gender
 
-class Celebrity implements ImageContainer {
+class Celebrity {
 
     String firstName
 
@@ -16,8 +13,6 @@ class Celebrity implements ImageContainer {
     String nickName
 
     String description
-
-    Image avatar
 
     Gender gender
 
@@ -58,7 +53,6 @@ class Celebrity implements ImageContainer {
         lastName(nullable: true, blank: true)
         nickName(nullable: true, blank: true)
         description(nullable: true, blank: true)
-        avatar(nullable: true)
         height(nullable: true)
         birthDate(nullable: true)
         birthLocation(nullable: true)
@@ -98,15 +92,6 @@ class Celebrity implements ImageContainer {
         return ZodiacSign.findByDate(birthDate)
     }
 
-    @Override
-    public String getImagePath(final GrailsApplication grailsApplication) {
-        return grailsApplication.config.files.celebrity.host + avatar.name
-    }
-
-    @Override
-    boolean hasImage() {
-        return avatar != null
-    }
 
     String getFullName() {
         return "${firstName} ${lastName}"

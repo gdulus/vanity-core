@@ -9,6 +9,11 @@ import vanity.pagination.PaginationParams
 class CelebrityService implements PaginationAware<Celebrity> {
 
     @Transactional(readOnly = true)
+    public List<Celebrity> listAll() {
+        return Celebrity.list().sort { it.firstName }
+    }
+
+    @Transactional(readOnly = true)
     public Celebrity read(final Long id) {
         return Celebrity.read(id)
     }
