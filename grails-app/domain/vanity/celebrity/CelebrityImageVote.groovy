@@ -8,6 +8,8 @@ class CelebrityImageVote {
 
     User user
 
-    Boolean orientation
+    Integer orientation
+
+    Date dateCreated
 
 }
